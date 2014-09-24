@@ -1,0 +1,8 @@
+*~
+*.pyc
+*.log
+.idea/
+*.csv
+*.xls
+*.xlsx
+*.ods
