@@ -98,7 +98,7 @@ class Csv(PyHeaderFile):
     #class that read csv files with ; and , and #
 
 
-    def __init__(self, name=None, header=list(), encode='utf-8',
+    def __init__(self, name=None, header=list(), encode='utf-8', header_line=0,
                  delimiters=[",", ";", "#"],
                  quotechar='"'):
         self.name = name
@@ -106,6 +106,7 @@ class Csv(PyHeaderFile):
         self.delimiters = list(delimiters)
         self.quotechar = quotechar
         self.encode = encode
+        self.header_line = header_line
         super(Csv, self).__init__()
 
     def read(self):
@@ -149,7 +150,7 @@ class Csv(PyHeaderFile):
     def _open(self):
         # open the file and get header
         self._file = open(self.name, 'rb')
-        self._file.seek(0)
+        self._file.seek(self.header_line)
         self._get_dialect()
         self.reader = self.csv.reader(self._file, self.dialect, encoding=self.encode, doublequote=True)
         self.header = self.reader.next()
@@ -174,6 +175,8 @@ class PyHeaderSheet(PyHeaderFile):
     def __init__(self):
         self._row = 0
         super(PyHeaderSheet, self).__init__()
+        if isinstance(self.header[0], tuple):
+            self.header = [h[0] for h in self.header]
         if not self.sheet_name and self.name:
             self._first_sheet()
         self._open_sheet()
@@ -223,9 +226,11 @@ class PyHeaderSheet(PyHeaderFile):
         if args:
             kwargs = dict(zip(self.header, args))
         for header in kwargs:
+
             cell = kwargs[header]
             if not isinstance(cell, tuple):
                 cell = (cell,)
+
             self.write_cell(self._row, self.header.index(header), *cell)
         self._row += 1
 
@@ -254,32 +259,43 @@ class Xls(PyHeaderSheet):
             self.colors[self._file.xf_list[cell.xf_index].background.pattern_colour_index] = style
         style.font.name = self._file.font_list[self._file.xf_list[cell.xf_index].font_index].name
         style.font.bold = self._file.font_list[self._file.xf_list[cell.xf_index].font_index].bold
-        if self.style:
-            return {self.header[y]: (cell.value, style)}
+        if isinstance(self.header[y], tuple):
+            header = self.header[y][0]
         else:
-            return {self.header[y]: cell.value}
+            header = self.header[y]
+        if self.style:
+            return {header: (cell.value, style)}
+        else:
+            return {header: cell.value}
 
 
     def write_cell(self, x, y, value, style=None):
         # writing style and value in the cell of x and y position
+        if isinstance(style, str):
+            style = self.xlwt.easyxf(style)
         if style:
             self._sheet.write(x, y, label=value, style=style)
         else:
             self._sheet.write(x, y, label=value)
 
-    def save(self):
+    def save(self, path=None):
         # save the file
-        self._file.save(self.name)
+        if path:
+            self._file.save(path + self.name)
+        else:
+            self._file.save(self.name)
 
     def _create(self):
         # create the file and sheet; write the header
-        self._file = self.xlwt.Workbook()
+        # TODO @thiago_medk
+        self._file = self.xlwt.Workbook(style_compression=2)
         basename = self.path.splitext(self.name)[0]
         if not self.sheet_name:
             self.sheet_name = basename
         self.name = "%s.xls" % basename
-        self._sheet = self._file.add_sheet(sheetname=self.sheet_name)
+        self._sheet = self._file.add_sheet(sheetname=self.sheet_name, cell_overwrite_ok=True)
         self.write(*self.header)
+
 
     def _open(self):
         # open the file and get sheets
@@ -320,10 +336,14 @@ class Xlsx(PyHeaderSheet):
 
     def read_cell(self, x, y):
         # reads the cell at position x and y; return value and style
-        if self.style:
-            return {self.header[y]: (self._sheet.rows[x][y].value, self._sheet.rows[x][y].style)}
+        if isinstance(self.header[y], tuple):
+            header = self.header[y][0]
         else:
-            return {self.header[y]: self._sheet.rows[x][y].value}
+            header = self.header[y]
+        if self.style:
+            return {header: (self._sheet.rows[x][y].value, self._sheet.rows[x][y].style)}
+        else:
+            return {header: self._sheet.rows[x][y].value}
 
 
     def write_cell(self, x, y, value, style=None):
@@ -332,10 +352,12 @@ class Xlsx(PyHeaderSheet):
         if style:
             self._sheet.cell(row=x+1,column=y+1).style = style
 
-    def save(self):
+    def save(self, path=None):
         # save the file
-        self._file.save(filename=self.name)
-
+        if path:
+            self._file.save(filename=path + self.name)
+        else:
+            self._file.save(filename=self.name)
 
     def _open(self):
         # open the file with the function xlwt and openpyxl; get sheets
