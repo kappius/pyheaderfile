@@ -3,9 +3,9 @@
 
 __all__ = ['Csv', 'Xls', 'Xlsx', 'Ods']
 
-class PyHeaderFile(object):
 
-    #father class of all filetypes
+class PyHeaderFile(object):
+    # father class of all filetypes
 
     def __init__(self, *args, **kwargs):
         self._import()
@@ -82,7 +82,7 @@ class PyHeaderFile(object):
 
     def _create(self):
 
-       # create new file with right extension
+        # create new file with right extension
 
         raise NotImplementedError
 
@@ -94,11 +94,9 @@ class PyHeaderFile(object):
 
 
 class Csv(PyHeaderFile):
+    # class that read csv files with ; and , and #
 
-    #class that read csv files with ; and , and #
-
-
-    def __init__(self, name=None, header=list(), encode='utf-8', header_line=0,
+    def __init__(self, name=None, header=list(), encode='utf-8', header_line=1,
                  delimiters=[",", ";", "#"],
                  quotechar='"'):
         self.name = name
@@ -142,7 +140,8 @@ class Csv(PyHeaderFile):
     def _get_dialect(self):
         # discover a dialect to csv file based on some delimiters
         try:
-            self.dialect = self.csv.Sniffer().sniff(self._file.readline(), delimiters=self.delimiters)
+            for i in range(0, self.header_line):
+                self.dialect = self.csv.Sniffer().sniff(self._file.readline(), delimiters=self.delimiters)
         except:
             self.dialect = self.delimiters[0]
         self._file.seek(0)
@@ -150,22 +149,25 @@ class Csv(PyHeaderFile):
     def _open(self):
         # open the file and get header
         self._file = open(self.name, 'rb')
-        self._file.seek(self.header_line)
+        self._file.seek(0)
         self._get_dialect()
         self.reader = self.csv.reader(self._file, self.dialect, encoding=self.encode, doublequote=True)
-        self.header = self.reader.next()
+        for i in range(0, self.header_line):
+            self.header = self.reader.next()
 
     def _create(self):
         # create the file and write the header
         basename = self.path.splitext(self.name)[0]
         self.name = "%s.csv" % basename
         with open(self.name, 'wb') as self._file:
+            self._file.seek(1)
             self.write(*self.header)
 
 
     def _import(self):
         import unicodecsv as csv
         import os.path
+
         self.csv = csv
         self.path = os.path
 
@@ -317,6 +319,7 @@ class Xls(PyHeaderSheet):
         import xlrd
         import xlwt
         import os.path
+
         self.path = os.path
         self.xlrd = xlrd
         self.xlwt = xlwt
@@ -348,9 +351,9 @@ class Xlsx(PyHeaderSheet):
 
     def write_cell(self, x, y, value, style=None):
         # writing style and value in the cell of x+1 and y+1 position
-        self._sheet.cell(row=x+1,column=y+1).value = value
+        self._sheet.cell(row=x + 1, column=y + 1).value = value
         if style:
-            self._sheet.cell(row=x+1,column=y+1).style = style
+            self._sheet.cell(row=x + 1, column=y + 1).style = style
 
     def save(self, path=None):
         # save the file
@@ -374,7 +377,7 @@ class Xlsx(PyHeaderSheet):
             self.sheet_xlrd = self.file_xlrd.sheet_by_name(self.sheet_name)
             self.ncols = self.sheet_xlrd.ncols
             self.nrows = self.sheet_xlrd.nrows
-            for i in range(0,self.ncols):
+            for i in range(0, self.ncols):
                 self.header = self.header + [self._sheet.rows[0][i].value]
 
 
@@ -393,6 +396,7 @@ class Xlsx(PyHeaderSheet):
         import openpyxl
         import xlrd
         import os.path
+
         self.path = os.path
         self.openpyxl = openpyxl
         self.xlrd = xlrd
@@ -423,7 +427,7 @@ class Ods(PyHeaderSheet):
 
     def get_sheets(self):
         # self.sheets = [s.name for s in self._file.sheets]
-        #        return self.sheets
+        # return self.sheets
         return NotImplementedError
 
     def _open(self):
@@ -432,13 +436,14 @@ class Ods(PyHeaderSheet):
 
     def _import(self):
         # import ezodf
-        #        self.ezodf = ezodf
+        # self.ezodf = ezodf
         raise NotImplementedError
 
 
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
+
 
 '''
 >>> c = Csv('Consolidado1.csv', encode='iso-8859-1')
