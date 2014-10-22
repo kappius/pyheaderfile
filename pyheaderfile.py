@@ -96,7 +96,7 @@ class PyHeaderFile(object):
 class Csv(PyHeaderFile):
     # class that read csv files with ; and , and #
 
-    def __init__(self, name=None, header=list(), encode='utf-8', header_line=1,
+    def __init__(self, name=None, header=list(), encode='utf-8', header_line=0,
                  delimiters=[",", ";", "#"],
                  quotechar='"'):
         self.name = name
@@ -141,7 +141,8 @@ class Csv(PyHeaderFile):
         # discover a dialect to csv file based on some delimiters
         try:
             for i in range(0, self.header_line):
-                self.dialect = self.csv.Sniffer().sniff(self._file.readline(), delimiters=self.delimiters)
+                self._file.readline()
+            self.dialect = self.csv.Sniffer().sniff(self._file.readline(), delimiters=self.delimiters)
         except:
             self.dialect = self.delimiters[0]
         self._file.seek(0)
@@ -153,7 +154,8 @@ class Csv(PyHeaderFile):
         self._get_dialect()
         self.reader = self.csv.reader(self._file, self.dialect, encoding=self.encode, doublequote=True)
         for i in range(0, self.header_line):
-            self.header = self.reader.next()
+            self.reader.next()
+        self.header = self.reader.next()
 
     def _create(self):
         # create the file and write the header
@@ -443,6 +445,7 @@ class Ods(PyHeaderSheet):
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
+
 
 
 '''
