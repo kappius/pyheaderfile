@@ -97,7 +97,7 @@ class Csv(PyHeaderFile):
     # class that read csv files with ; and , and #
 
     def __init__(self, name=None, header=list(), encode='utf-8', header_line=0,
-                 delimiters=[",", ";", "#"],
+                 delimiters=[",", ";", "#"], strip=False,
                  quotechar='"'):
         self.name = name
         self.header = header
@@ -105,6 +105,7 @@ class Csv(PyHeaderFile):
         self.quotechar = quotechar
         self.encode = encode
         self.header_line = header_line
+        self.strip = strip
         super(Csv, self).__init__()
 
     def read(self):
@@ -115,6 +116,8 @@ class Csv(PyHeaderFile):
             self._file.close()
             self._open()
         for row in self.reader:
+            if self.strip:
+                row = [r.strip() for r in row]
             yield dict(zip(self.header, row))
 
     def write(self, *args, **kwargs):
@@ -242,11 +245,12 @@ class PyHeaderSheet(PyHeaderFile):
 class Xls(PyHeaderSheet):
     # class that read xls files
 
-    def __init__(self, name=None, header=list(), sheet_name=None, style=None):
+    def __init__(self, name=None, header=list(), sheet_name=None, style=None, strip=False):
         self.name = name
         self.header = header
         self.sheet_name = sheet_name
         self.style = style
+        self.strip = strip
         self.colors = dict()
         super(Xls, self).__init__()
 
@@ -267,6 +271,8 @@ class Xls(PyHeaderSheet):
             header = self.header[y][0]
         else:
             header = self.header[y]
+        if self.strip:
+            cell.value = cell.value.strip()
         if self.style:
             return {header: (cell.value, style)}
         else:
@@ -332,10 +338,11 @@ class Xlsx(PyHeaderSheet):
     class that read xlsx files
     '''
 
-    def __init__(self, name=None, header=list(), sheet_name=None, style=None):
+    def __init__(self, name=None, header=list(), sheet_name=None, style=None, strip=False):
         self.name = name
         self.header = header
         self.style = style
+        self.strip = strip
         self.sheet_name = sheet_name
         super(Xlsx, self).__init__()
 
@@ -345,6 +352,8 @@ class Xlsx(PyHeaderSheet):
             header = self.header[y][0]
         else:
             header = self.header[y]
+        if self.strip:
+            self._sheet.rows[x][y].value = self._sheet.rows[x][y].value.strip()
         if self.style:
             return {header: (self._sheet.rows[x][y].value, self._sheet.rows[x][y].style)}
         else:
