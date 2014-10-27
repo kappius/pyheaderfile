@@ -145,7 +145,8 @@ class Csv(PyHeaderFile):
         try:
             for i in range(0, self.header_line):
                 self._file.readline()
-            self.dialect = self.csv.Sniffer().sniff(self._file.readline(), delimiters=self.delimiters)
+            self.dialect = self.csv.Sniffer().sniff(self._file.readline(),
+                                                    delimiters=self.delimiters)
         except:
             self.dialect = self.delimiters[0]
         self._file.seek(0)
@@ -155,7 +156,8 @@ class Csv(PyHeaderFile):
         self._file = open(self.name, 'rb')
         self._file.seek(0)
         self._get_dialect()
-        self.reader = self.csv.reader(self._file, self.dialect, encoding=self.encode, doublequote=True)
+        self.reader = self.csv.reader(self._file, self.dialect,
+                                      encoding=self.encode, doublequote=True)
         for i in range(0, self.header_line):
             self.reader.next()
         self.header = self.reader.next()
@@ -245,7 +247,8 @@ class PyHeaderSheet(PyHeaderFile):
 class Xls(PyHeaderSheet):
     # class that read xls files
 
-    def __init__(self, name=None, header=list(), sheet_name=None, style=None, strip=False):
+    def __init__(self, name=None, header=list(), sheet_name=None, style=None,
+                 strip=False):
         self.name = name
         self.header = header
         self.sheet_name = sheet_name
@@ -257,16 +260,25 @@ class Xls(PyHeaderSheet):
     def read_cell(self, x, y):
         # reads the cell at position x and y; puts the default styles in xlwt
         cell = self._sheet.row(x)[y]
-        if self._file.xf_list[cell.xf_index].background.pattern_colour_index == 64:
-            self._file.xf_list[cell.xf_index].background.pattern_colour_index = 9
-        if self._file.xf_list[cell.xf_index].background.pattern_colour_index in self.colors.keys():
-            style = self.colors[self._file.xf_list[cell.xf_index].background.pattern_colour_index]
+        if self._file.xf_list[
+            cell.xf_index].background.pattern_colour_index == 64:
+            self._file.xf_list[
+                cell.xf_index].background.pattern_colour_index = 9
+        if self._file.xf_list[
+            cell.xf_index].background.pattern_colour_index in self.colors.keys():
+            style = self.colors[self._file.xf_list[
+                cell.xf_index].background.pattern_colour_index]
         else:
-            style = self.xlwt.easyxf('pattern: pattern solid; border: top thin, right thin, bottom thin, left thin;')
-            style.pattern.pattern_fore_colour = self._file.xf_list[cell.xf_index].background.pattern_colour_index
-            self.colors[self._file.xf_list[cell.xf_index].background.pattern_colour_index] = style
-        style.font.name = self._file.font_list[self._file.xf_list[cell.xf_index].font_index].name
-        style.font.bold = self._file.font_list[self._file.xf_list[cell.xf_index].font_index].bold
+            style = self.xlwt.easyxf(
+                'pattern: pattern solid; border: top thin, right thin, bottom thin, left thin;')
+            style.pattern.pattern_fore_colour = self._file.xf_list[
+                cell.xf_index].background.pattern_colour_index
+            self.colors[self._file.xf_list[
+                cell.xf_index].background.pattern_colour_index] = style
+        style.font.name = self._file.font_list[
+            self._file.xf_list[cell.xf_index].font_index].name
+        style.font.bold = self._file.font_list[
+            self._file.xf_list[cell.xf_index].font_index].bold
         if isinstance(self.header[y], tuple):
             header = self.header[y][0]
         else:
@@ -303,14 +315,16 @@ class Xls(PyHeaderSheet):
         if not self.sheet_name:
             self.sheet_name = basename
         self.name = "%s.xls" % basename
-        self._sheet = self._file.add_sheet(sheetname=self.sheet_name, cell_overwrite_ok=True)
+        self._sheet = self._file.add_sheet(sheetname=self.sheet_name,
+                                           cell_overwrite_ok=True)
         self.write(*self.header)
 
 
     def _open(self):
         # open the file and get sheets
         if not hasattr(self, '_file'):
-            self._file = self.xlrd.open_workbook(filename=self.name, formatting_info=True)
+            self._file = self.xlrd.open_workbook(filename=self.name,
+                                                 formatting_info=True)
             self.sheet_names = self._file.sheet_names()
 
 
@@ -338,7 +352,8 @@ class Xlsx(PyHeaderSheet):
     class that read xlsx files
     '''
 
-    def __init__(self, name=None, header=list(), sheet_name=None, style=None, strip=False):
+    def __init__(self, name=None, header=list(), sheet_name=None, style=None,
+                 strip=False):
         self.name = name
         self.header = header
         self.style = style
@@ -355,7 +370,8 @@ class Xlsx(PyHeaderSheet):
         if self.strip:
             self._sheet.rows[x][y].value = self._sheet.rows[x][y].value.strip()
         if self.style:
-            return {header: (self._sheet.rows[x][y].value, self._sheet.rows[x][y].style)}
+            return {header: (
+                self._sheet.rows[x][y].value, self._sheet.rows[x][y].style)}
         else:
             return {header: self._sheet.rows[x][y].value}
 
@@ -376,7 +392,8 @@ class Xlsx(PyHeaderSheet):
     def _open(self):
         # open the file with the function xlwt and openpyxl; get sheets
         if not hasattr(self, '_file'):
-            self.file_xlrd = self.xlrd.open_workbook(filename=self.name, formatting_info=False)
+            self.file_xlrd = self.xlrd.open_workbook(filename=self.name,
+                                                     formatting_info=False)
             self._file = self.openpyxl.load_workbook(filename=self.name)
             self.sheet_names = self._file.get_sheet_names()
 
@@ -453,11 +470,10 @@ class Ods(PyHeaderSheet):
 
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()
 
-
-
-'''
+"""
 >>> c = Csv('Consolidado1.csv', encode='iso-8859-1')
 >>> q = Xls()
 >>> c = Csv()
@@ -496,4 +512,4 @@ if __name__ == "__main__":
 >>> c.name = 'teste2.csv'
 >>> b = Csv()
 >>> b(c, delimiters=[';'])
-'''
+"""
