@@ -9,7 +9,7 @@ setup(
   version = __import__('pyheaderfile').__version__,
   description = 'Enable handle of csv, xls and xlsx files getting '
                 'column header',
-  long_description = open(os.path.join(os.path.dirname(__file__), 'README.md'),
+  long_description = open(os.path.join(os.path.dirname(__file__), 'README.rst'),
                           'r').read(),
   author = 'Diogo Munaro Vieira, Isvaldo Fernandes de Souza, '
            'Thiago Pereira Fernandes',
