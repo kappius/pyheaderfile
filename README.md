@@ -1,109 +1,109 @@
 # PyHeaderFile
 
-The PyHeaderFile aims to facilitate the work with files that have extensions csv , xls and xlsx.
-This project aims to facilitate reading files over the header. With this classes Csv , Xls and Xlsx is possible
-converting extensions, removal of areas of lines of each value , the modification of the cell stylos
-the excel file , read a specific excel file and read the file by setting the line in the header cell is .
+The PyHeaderFile helps the work with files that have extensions csv, xls and xlsx.
+
+This project aims reading files over the header (collumn names). With this module we can handle Csv, Xls and Xlsx files and we can convert extensions, strip values in lines, change cell style of Excel files, read a specific Excel file, read an specific cell and read just some headers.
 
 ## Install
 ```pip install pyheaderfile```
 
 ## How to use
-* Class csv
+### Class csv
 
-Read csv
+####Read csv
 ```
 file = Csv(name=’file.csv’)
 for row in file.read():
     print row  
 ```
 
-Set Header
+####Set Header
 ```
-file.header = list('coluna1', 'coluna2','coluna3')
-```
-
-Create csv
-```
-file = Csv(name='filename.csv', header=['coluna1','coluna2','coluna3'])
+file.header = list('col1', 'col2','col3')
 ```
 
-Write list csv
+####Create csv
 ```
-file.write(list('coluna1','coluna2','coluna3'))
+file = Csv(name='filename.csv', header=['col1','col2','col3'])
 ```
 
-Write dict csv
+####Write list csv
+```
+file.write(list('col1','col2','col3'))
+```
+
+####Write dict csv
 ```
 file.write(dict(header=value))
 ```
-* Class Xls
+###Class Xls
 
-Read xls
+####Read xls
 ```
 file = Xls(name=’file.xls’)
 for row in file.read():
     print row  
 ```
 
-Set Header
+####Set Header
 ```
-file.header = list('coluna1', 'coluna2','coluna3')
-```
-
-Create xls
-```
-file = Xls(name='filename.xls', header=['coluna1','coluna2','coluna3'])
+file.header = list('col1', 'col2','col3')
 ```
 
-Write list
+####Create xls
 ```
-file.write(list('coluna1','coluna2','coluna3'))
+file = Xls(name='filename.xls', header=['col1','col2','col3'])
 ```
 
-Write dict
+####Write list
+```
+file.write(list('col1','col2','col3'))
+```
+
+####Write dict
 ```
 file.write(dict(header=value))
 ```
 
-* Class Xlsx
+###Class Xlsx
 
-Read
+####Read
 ```
 file = Xlsx(name=’file.xlsx’)
 for row in file.read():
     print row  
 ```
 
-Set Header
+####Set Header
 ```
-file.header = list('coluna1', 'coluna2','coluna3')
-```
-
-Create file
-```
-file = Xlsx(name='filename.xlsx', header=['coluna1','coluna2','coluna3'])
+file.header = list('col1', 'col2','col3')
 ```
 
-Write list
+####Create file
 ```
-file.write(list('coluna1','coluna2','coluna3'))
+file = Xlsx(name='filename.xlsx', header=['col1','col2','col3'])
 ```
 
-Write dict
+####Write list
+```
+file.write(list('col_val1','col_val2','col_val3'))
+```
+
+####Write dict
 ```
 file.write(dict(header=value))
 ```
 
-Save file
+####Save file
 ```
 file.save()
 ```
 
-* Modifying extensions
+###Modifying extensions, name and header
 ```
 q = Xls()
 x = Xlsx(name='filename.xlsx')
 x.name = 'file'
+x.header = list('col1', 'col2','col3')
 q(x)
 ```
