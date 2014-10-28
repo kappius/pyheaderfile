@@ -19,6 +19,8 @@ setup(
   download_url = 'https://github.com/kappius/pyheaderfile/archive/v0.1.tar.gz',
   keywords = ['xls', 'excel', 'spreadsheet', 'workbook', 'xlsx', 'csv', 'txt'],
   license = 'Apache',
+  include_package_data=True,
+  install_requires=['xlrd', 'xlwt', 'openpyxl', 'unicodecsv'],
   classifiers = ['Programming Language :: Python',
                  'Programming Language :: Python :: 2',
                  'Programming Language :: Python :: 3',

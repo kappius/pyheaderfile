@@ -1,12 +1,12 @@
 PyHeaderFile
-**********
+************
 
 The PyHeaderFile helps the work with files that have extensions csv, xls and xlsx.
 
 This project aims **reading files over the header (column names)**. With this module we can handle **Csv, Xls and Xlsx files using same interface**. Thus, we can convert extensions, strip values in lines, change cell style of Excel files, read a specific Excel file, read an specific cell and read just some headers.
 
 Install
-==========
+=======
 
 ::
 
@@ -16,10 +16,10 @@ How to use
 ==========
 
 Class csv
-----------
+---------
 
 Read csv
-^^^^^^^^^^
+^^^^^^^^
 
 ::
 
@@ -45,7 +45,7 @@ Create csv
 
 
 Write list csv
-^^^^^^^^^^
+^^^^^^^^^^^^^^
 
 ::
 
@@ -53,17 +53,17 @@ Write list csv
 
 
 Write dict csv
-^^^^^^^^^^
+^^^^^^^^^^^^^^
 
 ::
 
     file.write(dict(header=value))
 
 Class Xls
-----------
+---------
 
 Read xls
-^^^^^^^^^^
+^^^^^^^^
 
 ::
 
@@ -108,7 +108,7 @@ Class Xlsx
 ----------
 
 Read
-^^^^^^^^^^
+^^^^
 
 ::
 
@@ -126,7 +126,7 @@ Set Header
 
 
 Create file
-^^^^^^^^^^
+^^^^^^^^^^^
 
 ::
 
@@ -150,14 +150,14 @@ Write dict
 
 
 Save file
-^^^^^^^^^^
+^^^^^^^^^
 
 ::
 
     file.save()
 
 Modifying extensions, name and header
-----------
+-------------------------------------
 
 ::
 
