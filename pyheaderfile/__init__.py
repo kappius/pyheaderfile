@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__all__ = ['Csv', 'Xls', 'Xlsx', 'Ods']
+__all__ = ['Csv', 'Xls', 'Xlsx']
 
-VERSION = (0, 1, 7)
+VERSION = (0, 1, 8)
 __version__ = ".".join(map(str, VERSION))
 
 class PyHeaderFile(object):
@@ -169,7 +169,7 @@ class Csv(PyHeaderFile):
         basename = self.path.splitext(self.name)[0]
         self.name = "%s.csv" % basename
         with open(self.name, 'wb') as self._file:
-            self._file.seek(1)
+            self._file.seek(0)
             self.write(*self.header)
 
 
@@ -186,11 +186,14 @@ class PyHeaderSheet(PyHeaderFile):
     def __init__(self):
         self._row = 0
         super(PyHeaderSheet, self).__init__()
-        if isinstance(self.header[0], tuple):
-            self.header = [h[0] for h in self.header]
-        if not self.sheet_name and self.name:
-            self._first_sheet()
-        self._open_sheet()
+        if self.header:
+            if isinstance(self.header[0], tuple):
+                self.header = [h[0] for h in self.header]
+            if not self.sheet_name and self.name:
+                self._first_sheet()
+            self._open_sheet()
+        else:
+            raise Exception('Nothing in this sheet')
 
     # define and get sheet name into a spreadsheet file
     @property
@@ -432,6 +435,7 @@ class Xlsx(PyHeaderSheet):
         self.xlrd = xlrd
 
 
+# TODO(dmvieira) not implemented
 class Ods(PyHeaderSheet):
     '''
     class that read ods files.
@@ -469,49 +473,10 @@ class Ods(PyHeaderSheet):
         # self.ezodf = ezodf
         raise NotImplementedError
 
+################################################################################
+# run tests
+################################################################################
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     import doctest
-
     doctest.testmod()
-
-"""
->>> c = Csv('Consolidado1.csv', encode='iso-8859-1')
->>> q = Xls()
->>> c = Csv()
->>> x = Xlsx(name='thiago.xlsx',sheet_name='testeeeeeeee')
->>> x.name = 'diogo'
->>> q(x)
-
-
->>> x = Xlsx(name='testeeeeeeee.xlsx', header=['Codigo','Procedimento'])
->>> for i in c.read():
->>>     x.write(**i)
->>> x.save()
-
->>> c = Xls(name = 'teste.xls')
->>> x = Xls(name='testeeeeeeee.xls', header=['num','seq','Numero'])
->>> for i in c.read():
->>>     print i
->>>     x.write(**i)
->>> x.save()
-
->>> y = Csv('teste.csv')
->>> y.name = 'diogo.xls'
->>> c(y)
-
-
->>> print c.header, c.name
->>> c.write('muito','bom')
->>> c.write(tchau='2',oi='maneiro')
->>> c.save()
->>> c = Csv('teste.csv')
->>> for r in c.read():
->>>     print r
->>> print 'oi'
->>> c.save()
->>> c = Csv('teste.csv')
->>> c.name = 'teste2.csv'
->>> b = Csv()
->>> b(c, delimiters=[';'])
-"""
