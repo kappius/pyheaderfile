@@ -33,7 +33,7 @@ Set Header
 
 ::
 
-    file.header = list('col1', 'col2','col3')
+    file.header = ['col1', 'col2','col3']
 
 
 Create csv
@@ -49,7 +49,7 @@ Write list csv
 
 ::
 
-    file.write(list('col1','col2','col3'))
+    file.write(['col1','col2','col3'])
 
 
 Write dict csv
@@ -77,7 +77,7 @@ Set Header
 
 ::
 
-    file.header = list('col1', 'col2','col3')
+    file.header = ['col1', 'col2','col3']
 
 
 Create xls
@@ -93,7 +93,7 @@ Write list
 
 ::
 
-    file.write(list('col1','col2','col3'))
+    file.write(['col1','col2','col3'])
 
 
 Write dict
@@ -122,7 +122,7 @@ Set Header
 
 ::
 
-    file.header = list('col1', 'col2','col3')
+    file.header = ['col1', 'col2','col3']
 
 
 Create file
@@ -138,7 +138,7 @@ Write list
 
 ::
 
-    file.write(list('col_val1','col_val2','col_val3'))
+    file.write(['col_val1','col_val2','col_val3'])
 
 
 Write dict
@@ -164,5 +164,5 @@ Modifying extensions, name and header
     q = Xls()
     x = Xlsx(name='filename.xlsx')
     x.name = 'file'
-    x.header = list('col1', 'col2','col3')
+    x.header = ['col1', 'col2','col3']
     q(x)
