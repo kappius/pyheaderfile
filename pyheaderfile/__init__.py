@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 __all__ = ['Csv', 'Xls', 'Xlsx', 'Ods']
-__version__ = 0.1
+
+VERSION = (0, 1, 2)
+__version__ = ".".join(map(str, VERSION))
 
 class PyHeaderFile(object):
     # father class of all filetypes

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
 from setuptools import setup
 
 setup(
@@ -10,8 +9,7 @@ setup(
   version = __import__('pyheaderfile').__version__,
   description = 'Enable handle of csv, xls and xlsx files getting '
                 'column header',
-  long_description = open(os.path.join(os.path.dirname(__file__), 'README.md'),
-                          'r').read(),
+  long_description = open('README.md', 'r').read(),
   author = 'Diogo Munaro Vieira, Isvaldo Fernandes de Souza, '
            'Thiago Pereira Fernandes',
   author_email = 'diogo.mvieira@gmail.com, isvaldo.fernandes@gmail.com, '
