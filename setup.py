@@ -17,7 +17,7 @@ setup(
   author_email = 'diogo.mvieira@gmail.com, isvaldo.fernandes@gmail.com, '
                  'thiago.fernandes210@gmail.com',
   url = 'https://github.com/kappius/pyheaderfile',
-  download_url = 'https://github.com/kappius/pyheaderfile/tarball/0.1',
+  download_url = 'https://github.com/kappius/pyheaderfile/archive/v0.1.tar.gz',
   keywords = ['xls', 'excel', 'spreadsheet', 'workbook', 'xlsx', 'csv', 'txt'],
   license = 'Apache',
   classifiers = ['Programming Language :: Python',
