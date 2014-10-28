@@ -100,6 +100,7 @@ file.save()
 ```
 
 ###Modifying extensions, name and header
+<<<<<<< HEAD
 ```
 q = Xls()
 x = Xlsx(name='filename.xlsx')
@@ -107,3 +108,12 @@ x.name = 'file'
 x.header = list('col1', 'col2','col3')
 q(x)
 ```
+=======
+```
+q = Xls()
+x = Xlsx(name='filename.xlsx')
+x.name = 'file'
+x.header = list('col1', 'col2','col3')
+q(x)
+```
+>>>>>>> cf6f1c445c3f87bb3c597f6281a481ed3abb40e3
