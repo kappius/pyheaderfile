@@ -1,14 +1,14 @@
 # PyHeaderFile
 
-O PyHeaderFile tem o objetivo de facilitar a sua vida, com arquivos que tenham extensões csv, xls e xlsx. 
-Esse projeto visa facilitar a leitura de arquivos através da header. Com as classes Csv, Xls e Xlsx é possivel 
-a conversão de extensões, retirada dos espaços de cada valor das linhas, a modificação dos stylos das celulas
-dos arquivos excel, a ler uma celula especifica no arquivo excel e a ler o arquivo setando a linha em que a header se encontra. 
+The PyHeaderFile aims to facilitate the work with files that have extensions csv , xls and xlsx.
+This project aims to facilitate reading files over the header. With this classes Csv , Xls and Xlsx is possible
+converting extensions, removal of areas of lines of each value , the modification of the cell stylos
+the excel file , read a specific excel file and read the file by setting the line in the header cell is .
 
 ## Install
 ```pip install pyheaderfile```
 
-## Como usa
+## How to use
 * Class csv
 
 Read csv
@@ -18,12 +18,12 @@ for row in file.read():
     print row  
 ```
 
-Modificando a Header
+Set Header
 ```
 file.header = list('coluna1', 'coluna2','coluna3')
 ```
 
-Criando um csv
+Create csv
 ```
 file = Csv(name='filename.csv', header=['coluna1','coluna2','coluna3'])
 ```
@@ -33,7 +33,7 @@ Write list csv
 file.write(list('coluna1','coluna2','coluna3'))
 ```
 
-write dict csv
+Write dict csv
 ```
 file.write(dict(header=value))
 ```
@@ -46,12 +46,12 @@ for row in file.read():
     print row  
 ```
 
-Modificando a Header
+Set Header
 ```
 file.header = list('coluna1', 'coluna2','coluna3')
 ```
 
-Criando um xls
+Create xls
 ```
 file = Xls(name='filename.xls', header=['coluna1','coluna2','coluna3'])
 ```
@@ -75,12 +75,12 @@ for row in file.read():
     print row  
 ```
 
-Modificando a Header
+Set Header
 ```
 file.header = list('coluna1', 'coluna2','coluna3')
 ```
 
-Criando um arquivo
+Create file
 ```
 file = Xlsx(name='filename.xlsx', header=['coluna1','coluna2','coluna3'])
 ```
@@ -100,7 +100,7 @@ Save file
 file.save()
 ```
 
-* Modificando extenções
+* Modifying extensions
 ```
 q = Xls()
 x = Xlsx(name='filename.xlsx')
