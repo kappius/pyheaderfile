@@ -6,6 +6,7 @@ a conversão de extensões, retirada dos espaços de cada valor das linhas, a mo
 dos arquivos excel, a ler uma celula especifica no arquivo excel e a ler o arquivo setando a linha em que a header se encontra. 
 
 ## Install
+```pip install pyheaderfile```
 
 ## Como usa
 * Class csv
