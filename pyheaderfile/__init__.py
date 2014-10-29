@@ -189,11 +189,9 @@ class PyHeaderSheet(PyHeaderFile):
         if self.header:
             if isinstance(self.header[0], tuple):
                 self.header = [h[0] for h in self.header]
-            if not self.sheet_name and self.name:
-                self._first_sheet()
-            self._open_sheet()
-        else:
-            raise Exception('Nothing in this sheet')
+        if not self.sheet_name and self.name:
+            self._first_sheet()
+        self._open_sheet()
 
     # define and get sheet name into a spreadsheet file
     @property
@@ -240,11 +238,9 @@ class PyHeaderSheet(PyHeaderFile):
         if args:
             kwargs = dict(zip(self.header, args))
         for header in kwargs:
-
             cell = kwargs[header]
             if not isinstance(cell, tuple):
                 cell = (cell,)
-
             self.write_cell(self._row, self.header.index(header), *cell)
         self._row += 1
 
@@ -480,3 +476,5 @@ class Ods(PyHeaderSheet):
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
+
+
