@@ -534,8 +534,3 @@ class Ods(PyHeaderSheet):
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-"""
-    class that read xls files
-    >>> Xls()
-
-"""
