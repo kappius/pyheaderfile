@@ -3,10 +3,12 @@
 import os
 from setuptools import setup
 
+VERSION = __import__('pyheaderfile').__version__
+
 setup(
   name = 'pyheaderfile',
   packages = ['pyheaderfile'],
-  version = __import__('pyheaderfile').__version__,
+  version = VERSION,
   description = 'Enable handle of csv, xls and xlsx files getting '
                 'column header',
   long_description = open(os.path.join(os.path.dirname(__file__), 'README.rst'),
@@ -16,7 +18,7 @@ setup(
   author_email = 'diogo.mvieira@gmail.com, isvaldo.fernandes@gmail.com, '
                  'thiago.fernandes210@gmail.com',
   url = 'https://github.com/kappius/pyheaderfile',
-  download_url = 'https://github.com/kappius/pyheaderfile/archive/v0.1.tar.gz',
+  download_url = 'https://github.com/kappius/pyheaderfile/archive/%s.tar.gz' % VERSION,
   keywords = ['xls', 'excel', 'spreadsheet', 'workbook', 'xlsx', 'csv', 'txt'],
   license = 'Apache',
   include_package_data=True,
