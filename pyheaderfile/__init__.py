@@ -96,7 +96,26 @@ class PyHeaderFile(object):
 
 
 class Csv(PyHeaderFile):
-    # class that read csv files with ; and , and #
+    """
+        class that read csv files with ; and , and #
+
+        >>> type(Csv())
+        <class '__main__.Csv'>
+        >>> test = Csv(name="test", header=["col1","col2","col3"])
+        >>> test.write(*["test1","test2","test3"])
+        >>> test.save()
+        >>> test = Csv(name='test.csv')
+        >>> [i for i in test.read()]
+        [{u'col2': u'test2', u'col3': u'test3', u'col1': u'test1'}]
+        >>> test.name = 'test2'
+        >>> convert_xlsx = Xlsx()
+        >>> convert_xlsx(test)
+        >>> convert_xlsx.save()
+        >>> convert_xls = Xls()
+        >>> convert_xls(test)
+        >>> convert_xls.save()
+
+    """
 
     def __init__(self, name=None, header=list(), encode='utf-8', header_line=0,
                  delimiters=[",", ";", "#"], strip=False,
@@ -246,8 +265,26 @@ class PyHeaderSheet(PyHeaderFile):
 
 
 class Xls(PyHeaderSheet):
-    # class that read xls files
+    """
+        class that read xls files
 
+        >>> type(Xls())
+        <class '__main__.Xls'>
+        >>> test = Xls(name="test", header=["col1","col2","col3"])
+        >>> test.write(*["test1","test2","test3"])
+        >>> test.save()
+        >>> test = Xls(name='test.xls')
+        >>> [i for i in test.read()]
+        [{u'col2': u'test2', u'col3': u'test3', u'col1': u'test1'}]
+        >>> test.name = 'test2'
+        >>> convert_xlsx = Xlsx()
+        >>> convert_xlsx(test)
+        >>> convert_xlsx.save()
+        >>> convert_csv = Csv()
+        >>> convert_csv(test)
+        >>> convert_csv.save()
+
+    """
     def __init__(self, name=None, header=list(), sheet_name=None, style=None,
                  strip=False):
         self.name = name
@@ -259,7 +296,9 @@ class Xls(PyHeaderSheet):
         super(Xls, self).__init__()
 
     def read_cell(self, x, y):
-        # reads the cell at position x and y; puts the default styles in xlwt
+        """
+            reads the cell at position x and y; puts the default styles in xlwt
+        """
         cell = self._sheet.row(x)[y]
         if self._file.xf_list[
             cell.xf_index].background.pattern_colour_index == 64:
@@ -291,9 +330,10 @@ class Xls(PyHeaderSheet):
         else:
             return {header: cell.value}
 
-
     def write_cell(self, x, y, value, style=None):
-        # writing style and value in the cell of x and y position
+        """
+            writing style and value in the cell of x and y position
+        """
         if isinstance(style, str):
             style = self.xlwt.easyxf(style)
         if style:
@@ -349,9 +389,27 @@ class Xls(PyHeaderSheet):
 
 
 class Xlsx(PyHeaderSheet):
-    '''
-    class that read xlsx files
-    '''
+    """
+        class that read xlsx files
+
+        >>> type(Xlsx())
+        <class '__main__.Xlsx'>
+        >>> test = Xlsx(name="test", header=["col1","col2","col3"])
+        >>> test.write(*["test1","test2","test3"])
+        >>> test.save()
+        >>> test = Xlsx(name='test.xlsx')
+        >>> [i for i in test.read()]
+        [{u'col2': u'test2', u'col3': u'test3', u'col1': u'test1'}]
+        >>> test.name = 'test2'
+        >>> convert_xls = Xls()
+        >>> convert_xls(test)
+        >>> convert_xls.save()
+        >>> convert_csv = Csv()
+        >>> convert_csv(test)
+        >>> convert_csv.save()
+
+    """
+
 
     def __init__(self, name=None, header=list(), sheet_name=None, style=None,
                  strip=False):
@@ -476,5 +534,8 @@ class Ods(PyHeaderSheet):
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
+"""
+    class that read xls files
+    >>> Xls()
 
-
+"""
