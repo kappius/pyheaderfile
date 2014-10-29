@@ -3,7 +3,7 @@
 
 __all__ = ['Csv', 'Xls', 'Xlsx']
 
-VERSION = (0, 1, 8)
+VERSION = (0, 1, 9)
 __version__ = ".".join(map(str, VERSION))
 
 class PyHeaderFile(object):
@@ -96,7 +96,26 @@ class PyHeaderFile(object):
 
 
 class Csv(PyHeaderFile):
-    # class that read csv files with ; and , and #
+    """
+        class that read csv files with ; and , and #
+
+        >>> type(Csv())
+        <class '__main__.Csv'>
+        >>> test = Csv(name="test", header=["col1","col2","col3"])
+        >>> test.write(*["test1","test2","test3"])
+        >>> test.save()
+        >>> test = Csv(name='test.csv')
+        >>> [i for i in test.read()]
+        [{u'col2': u'test2', u'col3': u'test3', u'col1': u'test1'}]
+        >>> test.name = 'test2'
+        >>> convert_xlsx = Xlsx()
+        >>> convert_xlsx(test)
+        >>> convert_xlsx.save()
+        >>> convert_xls = Xls()
+        >>> convert_xls(test)
+        >>> convert_xls.save()
+
+    """
 
     def __init__(self, name=None, header=list(), encode='utf-8', header_line=0,
                  delimiters=[",", ";", "#"], strip=False,
@@ -189,11 +208,9 @@ class PyHeaderSheet(PyHeaderFile):
         if self.header:
             if isinstance(self.header[0], tuple):
                 self.header = [h[0] for h in self.header]
-            if not self.sheet_name and self.name:
-                self._first_sheet()
-            self._open_sheet()
-        else:
-            raise Exception('Nothing in this sheet')
+        if not self.sheet_name and self.name:
+            self._first_sheet()
+        self._open_sheet()
 
     # define and get sheet name into a spreadsheet file
     @property
@@ -240,18 +257,34 @@ class PyHeaderSheet(PyHeaderFile):
         if args:
             kwargs = dict(zip(self.header, args))
         for header in kwargs:
-
             cell = kwargs[header]
             if not isinstance(cell, tuple):
                 cell = (cell,)
-
             self.write_cell(self._row, self.header.index(header), *cell)
         self._row += 1
 
 
 class Xls(PyHeaderSheet):
-    # class that read xls files
+    """
+        class that read xls files
 
+        >>> type(Xls())
+        <class '__main__.Xls'>
+        >>> test = Xls(name="test", header=["col1","col2","col3"])
+        >>> test.write(*["test1","test2","test3"])
+        >>> test.save()
+        >>> test = Xls(name='test.xls')
+        >>> [i for i in test.read()]
+        [{u'col2': u'test2', u'col3': u'test3', u'col1': u'test1'}]
+        >>> test.name = 'test2'
+        >>> convert_xlsx = Xlsx()
+        >>> convert_xlsx(test)
+        >>> convert_xlsx.save()
+        >>> convert_csv = Csv()
+        >>> convert_csv(test)
+        >>> convert_csv.save()
+
+    """
     def __init__(self, name=None, header=list(), sheet_name=None, style=None,
                  strip=False):
         self.name = name
@@ -263,7 +296,9 @@ class Xls(PyHeaderSheet):
         super(Xls, self).__init__()
 
     def read_cell(self, x, y):
-        # reads the cell at position x and y; puts the default styles in xlwt
+        """
+            reads the cell at position x and y; puts the default styles in xlwt
+        """
         cell = self._sheet.row(x)[y]
         if self._file.xf_list[
             cell.xf_index].background.pattern_colour_index == 64:
@@ -295,9 +330,10 @@ class Xls(PyHeaderSheet):
         else:
             return {header: cell.value}
 
-
     def write_cell(self, x, y, value, style=None):
-        # writing style and value in the cell of x and y position
+        """
+            writing style and value in the cell of x and y position
+        """
         if isinstance(style, str):
             style = self.xlwt.easyxf(style)
         if style:
@@ -353,9 +389,27 @@ class Xls(PyHeaderSheet):
 
 
 class Xlsx(PyHeaderSheet):
-    '''
-    class that read xlsx files
-    '''
+    """
+        class that read xlsx files
+
+        >>> type(Xlsx())
+        <class '__main__.Xlsx'>
+        >>> test = Xlsx(name="test", header=["col1","col2","col3"])
+        >>> test.write(*["test1","test2","test3"])
+        >>> test.save()
+        >>> test = Xlsx(name='test.xlsx')
+        >>> [i for i in test.read()]
+        [{u'col2': u'test2', u'col3': u'test3', u'col1': u'test1'}]
+        >>> test.name = 'test2'
+        >>> convert_xls = Xls()
+        >>> convert_xls(test)
+        >>> convert_xls.save()
+        >>> convert_csv = Csv()
+        >>> convert_csv(test)
+        >>> convert_csv.save()
+
+    """
+
 
     def __init__(self, name=None, header=list(), sheet_name=None, style=None,
                  strip=False):
