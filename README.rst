@@ -189,4 +189,4 @@ And for a SUPERCOMBO you can guess and convert everything!
     convert_to = Xls()
     my_file.name = 'beautiful_name'
     my_file.header = ['col1', 'col2','col3']
-    convert_to(my_file) # now yout file is a xls file ;)
+    convert_to(my_file) # now your file is a xls file ;)
