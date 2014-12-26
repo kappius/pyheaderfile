@@ -156,13 +156,35 @@ Save file
 
     file.save()
 
+Tricks
+------
+
 Modifying extensions, name and header
--------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
     q = Xls()
     x = Xlsx(name='filename.xlsx')
-    x.name = 'file'
+    x.name = 'ugly file name'
     x.header = ['col1', 'col2','col3']
     q(x)
+
+
+Guess file type
+^^^^^^^^^^^^^^^
+
+To guess what class you need to open just use:
+
+::
+    filename = 'test.xls'
+    my_file = guess_type(filename)
+
+And for a SUPERCOMBO you can guess and convert everything!
+
+::
+    my_file = guess_type(filename)
+    convert_to = Xls()
+    my_file.name = 'beautiful_name'
+    my_file.header = ['col1', 'col2','col3']
+    convert_to(my_file) # now yout file is a xls file ;)
