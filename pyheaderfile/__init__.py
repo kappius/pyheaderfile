@@ -3,7 +3,7 @@
 
 __all__ = ['Csv', 'Xls', 'Xlsx', 'guess_type']
 
-VERSION = (0, 2, 0)
+VERSION = (0, 2, 1)
 __version__ = ".".join(map(str, VERSION))
 
 class PyHeaderFile(object):
@@ -537,8 +537,8 @@ def guess_type(filename):
     case = {'.xls': "Xls(filename)",
             '.xlsx': "Xlsx(filename)",
             '.csv': "Csv(filename)"}
-    if case.get(extension):
-        return eval(case.get(extension))
+    if extension and case.get(extension):
+        return eval(case.get(extension.lower()))
     else:
         raise Exception('No extension found')
 
