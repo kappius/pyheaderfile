@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__all__ = ['Csv', 'Xls', 'Xlsx']
+__all__ = ['Csv', 'Xls', 'Xlsx', 'guess_type']
 
-VERSION = (0, 1, 9)
+VERSION = (0, 2, 0)
 __version__ = ".".join(map(str, VERSION))
 
 class PyHeaderFile(object):
@@ -526,6 +526,21 @@ class Ods(PyHeaderSheet):
         # import ezodf
         # self.ezodf = ezodf
         raise NotImplementedError
+
+def guess_type(filename):
+    """ Utility function to call classes based on filename extension.
+    Just usefull if you are reading the file and don't know file extension.
+    """
+    import os
+
+    extension = os.path.splitext(filename)[1]
+    case = {'.xls': "Xls(filename)",
+            '.xlsx': "Xlsx(filename)",
+            '.csv': "Csv(filename)"}
+    if case.get(extension):
+        return eval(case.get(extension))
+    else:
+        raise Exception('No extension found')
 
 ################################################################################
 # run tests
