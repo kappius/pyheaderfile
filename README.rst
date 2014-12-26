@@ -177,12 +177,14 @@ Guess file type
 To guess what class you need to open just use:
 
 ::
+
     filename = 'test.xls'
     my_file = guess_type(filename)
 
 And for a SUPERCOMBO you can guess and convert everything!
 
 ::
+
     my_file = guess_type(filename)
     convert_to = Xls()
     my_file.name = 'beautiful_name'
