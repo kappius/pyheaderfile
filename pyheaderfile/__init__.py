@@ -527,18 +527,18 @@ class Ods(PyHeaderSheet):
         # self.ezodf = ezodf
         raise NotImplementedError
 
-def guess_type(filename):
+def guess_type(filename,**kwargs):
     """ Utility function to call classes based on filename extension.
     Just usefull if you are reading the file and don't know file extension.
     """
     import os
 
     extension = os.path.splitext(filename)[1]
-    case = {'.xls': "Xls(filename)",
-            '.xlsx': "Xlsx(filename)",
-            '.csv': "Csv(filename)"}
-    if extension and case.get(extension):
-        return eval(case.get(extension.lower()))
+    case = {'.xls': Xls,
+            '.xlsx': Xlsx,
+            '.csv': Csv}
+    if extension and case.get(extension.lower()):
+        return case.get(extension.lower())(filename, **kwargs)
     else:
         raise Exception('No extension found')
 
