@@ -185,8 +185,8 @@ class Csv(PyHeaderFile):
 
     def _create(self):
         # create the file and write the header
-        basename = self.path.splitext(self.name)[0]
-        self.name = "%s.csv" % basename
+        name = self.path.splitext(self.name)[0]
+        self.name = "%s.csv" % name
         with open(self.name, 'wb') as self._file:
             self._file.seek(0)
             self.write(*self.header)
@@ -352,10 +352,11 @@ class Xls(PyHeaderSheet):
         # create the file and sheet; write the header
         # TODO @thiago_medk
         self._file = self.xlwt.Workbook(style_compression=2)
-        basename = self.path.splitext(self.name)[0]
+        name = self.path.splitext(self.name)[0]
+        basename = self.path.basename(name)
         if not self.sheet_name:
             self.sheet_name = basename
-        self.name = "%s.xls" % basename
+        self.name = "%s.xls" % name
         self._sheet = self._file.add_sheet(sheetname=self.sheet_name,
                                            cell_overwrite_ok=True)
         self.write(*self.header)
@@ -471,10 +472,11 @@ class Xlsx(PyHeaderSheet):
     def _create(self):
         # create the file and sheet; write the header
         self._file = self.openpyxl.Workbook()
-        basename = self.path.splitext(self.name)[0]
+        name = self.path.splitext(self.name)[0]
+        basename = self.path.basename(name)
         if not self.sheet_name:
             self.sheet_name = basename
-        self.name = "%s.xlsx" % basename
+        self.name = "%s.xlsx" % name
         self._sheet = self._file.active
         self._sheet.title = self.sheet_name
         self.write(*self.header)
