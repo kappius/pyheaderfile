@@ -21,9 +21,11 @@ Class csv
 Read csv
 ^^^^^^^^
 
+Default encode is utf8, but you can change it. Default strip is false, but classes can strip each value automatically:
+
 ::
 
-    file = Csv(name=’file.csv’)
+    file = Csv(name=’file.csv’, encode='latin1', strip=True)
     for row in file.read():
         print row  
 
@@ -65,9 +67,11 @@ Class Xls
 Read xls
 ^^^^^^^^
 
+You can strip automatically values from xls files too, but default value is False:
+
 ::
 
-    file = Xls(name=’file.xls’)
+    file = Xls(name=’file.xls’, strip=True)
     for row in file.read():
         print row  
 
@@ -110,9 +114,11 @@ Class Xlsx
 Read
 ^^^^
 
+You can strip values from xlsx files too:
+
 ::
 
-    file = Xlsx(name=’file.xlsx’)
+    file = Xlsx(name=’file.xlsx’, strip=True)
     for row in file.read():
         print row  
 
@@ -181,11 +187,19 @@ To guess what class you need to open just use:
     filename = 'test.xls'
     my_file = guess_type(filename)
 
+If you are working with Csv or Xls, you can pass all possible kwargs and guess_type guess right kwargs:
+
+::
+
+    my_file = guess_type(filename, encode='latin1', strip=True)
+
+Only if filename is a Csv file, then guess_type send encode kwarg to instance.
+
 And for a SUPERCOMBO you can guess and convert everything!
 
 ::
 
-    my_file = guess_type(filename)
+    my_file = guess_type(filename, **kwargs)
     convert_to = Xls()
     my_file.name = 'beautiful_name'
     my_file.header = ['col1', 'col2','col3']
