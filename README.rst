@@ -15,6 +15,15 @@ Install
 How to use
 ==========
 
+First of all you need to import module:
+
+::
+
+    from pyheaderfile import Csv, Xls, Xlsx, guess_type
+
+Each of them will be explained below.
+
+
 Class csv
 ---------
 
@@ -185,12 +194,29 @@ Alternativelly to save you can use close() that just use same path mandatorily.
 
     file.close()
 
+Working with memory
+-------------------
+
+Objects can be stored in memory and then saved into disk or simple stay in memory:
+
+::
+
+    from StringIO import StringIO
+    mem_obj = StringIO()
+    xls = Xls(mem_obj, header=['first', 'second'])
+    xls.write('1 guy', '2 guys')
+    xls.save()  # or you can xls.save('/path/to/file/')
+
+When you save file you retrieve StringIO contents or save its to disk specifying a directory. The content will be saved with name 'default.xls' in this case.
+
 
 Tricks
 ------
 
 Modifying extensions, name and header
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can change filename and header using this:
 
 ::
 
@@ -200,6 +226,7 @@ Modifying extensions, name and header
     x.header = ['col1', 'col2','col3']
     q(x)
 
+BE CAREFUL! You can't change name using StringIO or others memory storage. You will get an error.
 
 Guess file type
 ^^^^^^^^^^^^^^^
