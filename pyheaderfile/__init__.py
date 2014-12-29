@@ -49,14 +49,19 @@ class PyHeaderFile(object):
     def __exit__(self):
         self.save()
 
-    def save(self):
+    def save(self, path=None):
+
+        # save and close file in other path
+
+        return NotImplemented
+
+    # can use method close or save
+    def close(self):
 
         # save and close file
 
         return NotImplemented
 
-    # can use method close or save
-    close = save
 
     # getter and setter for filename. You can change filename to convert
     @property
@@ -103,8 +108,8 @@ class Csv(PyHeaderFile):
         <class '__main__.Csv'>
         >>> test = Csv(name="test", header=["col1","col2","col3"])
         >>> test.write(*["test1","test2","test3"])
-        >>> test.save()
-        >>> test = Csv(name='test.csv')
+        >>> test.save('../')
+        >>> test = Csv(name='../test.csv')
         >>> [i for i in test.read()]
         [{u'col2': u'test2', u'col3': u'test3', u'col1': u'test1'}]
         >>> test.name = 'test2'
@@ -143,11 +148,14 @@ class Csv(PyHeaderFile):
 
     def write(self, *args, **kwargs):
         # write the value in the file
-        if not hasattr(self, '_file'):
-            self._file = open(self.name, 'a')
-        elif self._file.mode == 'rb':
-            self._file.close()
-            self._file = open(self.name, 'a')
+        if isinstance(self.name, str) or isinstance(self.name, unicode):
+            if not hasattr(self, '_file'):
+                self._file = open(self.name, 'a')
+            elif self._file.mode == 'rb':
+                self._file.close()
+                self._file = open(self.name, 'a')
+        else:
+            self._file = self.name
         writer = self.csv.DictWriter(self._file, delimiter=self.delimiters[0],
                                      fieldnames=self.header,
                                      quotechar=self.quotechar,
@@ -156,10 +164,29 @@ class Csv(PyHeaderFile):
             kwargs = dict(zip(self.header, args))
         writer.writerow(kwargs)
 
-    def save(self):
+    def close(self):
         # close de file
+        if not (isinstance(self.name, str) or isinstance(self.name, unicode)):
+            return self.name.getvalue()
+
         if hasattr(self, '_file'):
             self._file.close()
+
+
+    def save(self, path=None):
+        # move and close de file
+        if (isinstance(self.name, str) or isinstance(self.name, unicode)) and path:
+            self.close()
+            name = self.name
+            basename = self.path.basename(name)
+            self.rename(name, self.path.join(path, basename))
+        elif path:
+            name = 'default.csv'
+            content = self.close()
+            with open(self.path.join(path, name), 'w') as f:
+                f.write(content)
+        else:
+           return self.close()
 
     def _get_dialect(self):
         # discover a dialect to csv file based on some delimiters
@@ -174,7 +201,10 @@ class Csv(PyHeaderFile):
 
     def _open(self):
         # open the file and get header
-        self._file = open(self.name, 'rb')
+        if isinstance(self.name, str) or isinstance(self.name, unicode):
+            self._file = open(self.name, 'rb')
+        else:
+            self._file = self.name
         self._file.seek(0)
         self._get_dialect()
         self.reader = self.csv.reader(self._file, self.dialect,
@@ -185,17 +215,26 @@ class Csv(PyHeaderFile):
 
     def _create(self):
         # create the file and write the header
-        name = self.path.splitext(self.name)[0]
-        self.name = "%s.csv" % name
-        with open(self.name, 'wb') as self._file:
+        if isinstance(self.name, str) or isinstance(self.name, unicode):
+            name = self.path.splitext(self.name)[0]
+            self.name = "%s.csv" % name
+            self._file = open(self.name, 'wb')
+        else:
+            self._file = self.name
+
+        if isinstance(self.name, str) or isinstance(self.name, unicode):
             self._file.seek(0)
+            self.write(*self.header)
+            self._file.close()
+        else:
             self.write(*self.header)
 
 
     def _import(self):
         import unicodecsv as csv
-        import os.path
+        import os
 
+        self.rename = os.rename
         self.csv = csv
         self.path = os.path
 
@@ -263,7 +302,6 @@ class PyHeaderSheet(PyHeaderFile):
             self.write_cell(self._row, self.header.index(header), *cell)
         self._row += 1
 
-
 class Xls(PyHeaderSheet):
     """
         class that read xls files
@@ -272,8 +310,8 @@ class Xls(PyHeaderSheet):
         <class '__main__.Xls'>
         >>> test = Xls(name="test", header=["col1","col2","col3"])
         >>> test.write(*["test1","test2","test3"])
-        >>> test.save()
-        >>> test = Xls(name='test.xls')
+        >>> test.save('../')
+        >>> test = Xls(name='../test.xls')
         >>> [i for i in test.read()]
         [{u'col2': u'test2', u'col3': u'test3', u'col1': u'test1'}]
         >>> test.name = 'test2'
@@ -341,22 +379,38 @@ class Xls(PyHeaderSheet):
         else:
             self._sheet.write(x, y, label=value)
 
+    def close(self):
+        # save and close without changing path
+        self._file.save(self.name)
+        if not (isinstance(self.name, str) or isinstance(self.name, unicode)):
+            return self.name.getvalue()
+
     def save(self, path=None):
         # save the file
-        if path:
-            self._file.save(path + self.name)
+        if isinstance(self.name, str) or isinstance(self.name, unicode):
+            name = self.name
         else:
-            self._file.save(self.name)
+            name = 'default.xls'
+
+        if path:
+            basename = self.path.basename(name)
+            self._file.save(self.path.join(path, basename))
+        else:
+            return self.close()
 
     def _create(self):
         # create the file and sheet; write the header
         # TODO @thiago_medk
         self._file = self.xlwt.Workbook(style_compression=2)
-        name = self.path.splitext(self.name)[0]
-        basename = self.path.basename(name)
-        if not self.sheet_name:
-            self.sheet_name = basename
-        self.name = "%s.xls" % name
+        if isinstance(self.name, str) or isinstance(self.name, unicode):
+            name = self.path.splitext(self.name)[0]
+            basename = self.path.basename(name)
+            if not self.sheet_name:
+                self.sheet_name = basename
+            self.name = "%s.xls" % name
+        else:
+            self.sheet_name = self.sheet_name or 'default'
+
         self._sheet = self._file.add_sheet(sheetname=self.sheet_name,
                                            cell_overwrite_ok=True)
         self.write(*self.header)
@@ -397,8 +451,8 @@ class Xlsx(PyHeaderSheet):
         <class '__main__.Xlsx'>
         >>> test = Xlsx(name="test", header=["col1","col2","col3"])
         >>> test.write(*["test1","test2","test3"])
-        >>> test.save()
-        >>> test = Xlsx(name='test.xlsx')
+        >>> test.save('../')
+        >>> test = Xlsx(name='../test.xlsx')
         >>> [i for i in test.read()]
         [{u'col2': u'test2', u'col3': u'test3', u'col1': u'test1'}]
         >>> test.name = 'test2'
@@ -442,12 +496,24 @@ class Xlsx(PyHeaderSheet):
         if style:
             self._sheet.cell(row=x + 1, column=y + 1).style = style
 
+    def close(self):
+        # save and close without changing path
+        self._file.save(self.name)
+        if not (isinstance(self.name, str) or isinstance(self.name, unicode)):
+            return self.name.getvalue()
+
     def save(self, path=None):
         # save the file
-        if path:
-            self._file.save(filename=path + self.name)
+        if isinstance(self.name, str) or isinstance(self.name, unicode):
+            name = self.name
         else:
-            self._file.save(filename=self.name)
+            name = 'default.xlsx'
+
+        if path:
+            basename = self.path.basename(name)
+            self._file.save(self.path.join(path,basename))
+        else:
+            return self.close()
 
     def _open(self):
         # open the file with the function xlwt and openpyxl; get sheets
@@ -472,11 +538,15 @@ class Xlsx(PyHeaderSheet):
     def _create(self):
         # create the file and sheet; write the header
         self._file = self.openpyxl.Workbook()
-        name = self.path.splitext(self.name)[0]
-        basename = self.path.basename(name)
-        if not self.sheet_name:
-            self.sheet_name = basename
-        self.name = "%s.xlsx" % name
+        if isinstance(self.name, str) or isinstance(self.name, unicode):
+            name = self.path.splitext(self.name)[0]
+            basename = self.path.basename(name)
+            if not self.sheet_name:
+                self.sheet_name = basename
+            self.name = "%s.xlsx" % name
+        else:
+            self.sheet_name = self.sheet_name or 'default'
+
         self._sheet = self._file.active
         self._sheet.title = self.sheet_name
         self.write(*self.header)
@@ -512,7 +582,10 @@ class Ods(PyHeaderSheet):
     def write_cell(self, x, y, value, style=None):
         raise NotImplementedError
 
-    def save(self):
+    def save(self, path=None):
+        raise NotImplementedError
+
+    def close(self, path=None):
         raise NotImplementedError
 
     def get_sheets(self):

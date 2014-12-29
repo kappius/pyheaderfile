@@ -61,6 +61,13 @@ Write dict csv
 
     file.write(dict(header=value))
 
+Save file
+^^^^^^^^^
+
+::
+
+    file.save()
+
 Class Xls
 ---------
 
@@ -107,6 +114,14 @@ Write dict
 
     file.write(dict(header=value))
 
+Save file
+^^^^^^^^^
+
+Finally you can save the file
+
+::
+
+    file.save()
 
 Class Xlsx
 ----------
@@ -158,9 +173,18 @@ Write dict
 Save file
 ^^^^^^^^^
 
+You can save the file to another path too
+
 ::
 
-    file.save()
+    file.save('/path/to/new/file/')
+
+Alternativelly to save you can use close() that just use same path mandatorily.
+
+::
+
+    file.close()
+
 
 Tricks
 ------
@@ -204,3 +228,4 @@ And for a SUPERCOMBO you can guess and convert everything!
     my_file.name = 'beautiful_name'
     my_file.header = ['col1', 'col2','col3']
     convert_to(my_file) # now your file is a xls file ;)
+    convert_to.save('/my/other/path/')
