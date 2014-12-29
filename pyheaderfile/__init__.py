@@ -3,7 +3,7 @@
 
 __all__ = ['Csv', 'Xls', 'Xlsx', 'guess_type']
 
-VERSION = (0, 2, 3)
+VERSION = (0, 2, 4)
 __version__ = ".".join(map(str, VERSION))
 
 class PyHeaderFile(object):
