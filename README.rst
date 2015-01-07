@@ -228,7 +228,7 @@ Same as writing you can read objects from memory. So, after you save your conten
     # here use new object
     new_xls = Xls(mem_obj)
     for row in new_xls:
-        print row # should echo {'first': '1 guy', 'second': '2 guys'} them next rows
+        print row # should echo {'first': '1 guy', 'second': '2 guys'} then next rows
 
 Tricks
 ------
