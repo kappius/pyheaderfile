@@ -197,6 +197,9 @@ Alternativelly to save you can use close() that just use same path mandatorily.
 Working with memory
 -------------------
 
+Writing
+^^^^^^^
+
 Objects can be stored in memory and then saved into disk or simple stay in memory:
 
 ::
@@ -209,6 +212,23 @@ Objects can be stored in memory and then saved into disk or simple stay in memor
 
 When you save file you retrieve StringIO contents or save its to disk specifying a directory. The content will be saved with name 'default.xls' in this case.
 
+
+Reading
+^^^^^^^
+
+Same as writing you can read objects from memory. So, after you save your content you can read it again:
+
+::
+
+    from StringIO import StringIO
+    mem_obj = StringIO()
+    xls = Xls(mem_obj, header=['first', 'second'])
+    xls.write('1 guy', '2 guys')
+    xls.save()
+    # here use new object
+    new_xls = Xls(mem_obj)
+    for row in new_xls:
+        print row # should echo {'first': '1 guy', 'second': '2 guys'} them next rows
 
 Tricks
 ------

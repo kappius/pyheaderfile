@@ -3,7 +3,7 @@
 
 __all__ = ['Csv', 'Xls', 'Xlsx', 'guess_type']
 
-VERSION = (0, 2, 4)
+VERSION = (0, 2, 5)
 __version__ = ".".join(map(str, VERSION))
 
 class PyHeaderFile(object):
@@ -136,10 +136,13 @@ class Csv(PyHeaderFile):
 
     def read(self):
         # open file in mode write and read the line. Return the dict 'header = value'
-        if not hasattr(self, '_file'):
-            self._open()
-        elif self._file.mode == 'wb':
-            self._file.close()
+        if isinstance(self.name, str) or isinstance(self.name, unicode):
+            if not hasattr(self, '_file'):
+                self._open()
+            elif self._file.mode == 'wb':
+                self._file.close()
+                self._open()
+        else:
             self._open()
         for row in self.reader:
             if self.strip:
@@ -419,8 +422,12 @@ class Xls(PyHeaderSheet):
     def _open(self):
         # open the file and get sheets
         if not hasattr(self, '_file'):
-            self._file = self.xlrd.open_workbook(filename=self.name,
-                                                 formatting_info=True)
+            if isinstance(self.name, str) or isinstance(self.name, unicode):
+                self._file = self.xlrd.open_workbook(filename=self.name,
+                                                     formatting_info=True)
+            else:
+                self._file = self.xlrd.open_workbook(file_contents=self.name.getvalue(),
+                                                     formatting_info=True)
             self.sheet_names = self._file.sheet_names()
 
 
@@ -518,8 +525,14 @@ class Xlsx(PyHeaderSheet):
     def _open(self):
         # open the file with the function xlwt and openpyxl; get sheets
         if not hasattr(self, '_file'):
-            self.file_xlrd = self.xlrd.open_workbook(filename=self.name,
+            #  needed to get right col number
+            if isinstance(self.name, str) or isinstance(self.name, unicode):
+                self.file_xlrd = self.xlrd.open_workbook(filename=self.name,
                                                      formatting_info=False)
+            else:
+                self.file_xlrd = self.xlrd.open_workbook(file_contents=self.name.getvalue(),
+                                                     formatting_info=False)
+
             self._file = self.openpyxl.load_workbook(filename=self.name)
             self.sheet_names = self._file.get_sheet_names()
 
