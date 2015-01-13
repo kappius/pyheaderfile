@@ -6,6 +6,7 @@ __all__ = ['Csv', 'Xls', 'Xlsx', 'guess_type']
 VERSION = (0, 2, 5)
 __version__ = ".".join(map(str, VERSION))
 
+
 class PyHeaderFile(object):
     # father class of all filetypes
 
@@ -15,7 +16,6 @@ class PyHeaderFile(object):
             if self.header:
                 self._create()
             self._open()
-
 
     def __call__(self, instance, **kwargs):
 
@@ -40,10 +40,11 @@ class PyHeaderFile(object):
         raise NotImplementedError
 
     def write(self, *args, **kwargs):
-        ''' write to file by args or kwargs. Should be a list
+        """
+        write to file by args or kwargs. Should be a list
         with elements or a dict for writes with unordered
         lines
-        '''
+        """
         raise NotImplementedError
 
     def __exit__(self):
@@ -82,9 +83,10 @@ class PyHeaderFile(object):
         self._header = header
 
     def _open(self):
-        ''' open file and get header of file. Some oder needed initialization
+        """
+        open file and get header of file. Some oder needed initialization
         things can be done here
-        '''
+        """
         raise NotImplementedError
 
     def _create(self):
@@ -175,7 +177,6 @@ class Csv(PyHeaderFile):
         if hasattr(self, '_file'):
             self._file.close()
 
-
     def save(self, path=None):
         # move and close de file
         if (isinstance(self.name, str) or isinstance(self.name, unicode)) and path:
@@ -231,7 +232,6 @@ class Csv(PyHeaderFile):
             self._file.close()
         else:
             self.write(*self.header)
-
 
     def _import(self):
         import unicodecsv as csv
@@ -290,11 +290,12 @@ class PyHeaderSheet(PyHeaderFile):
 
     # pass x, y, value and style for function write_cell
     def write(self, *args, **kwargs):
-        ''' args: tuple(value, style), tuple(value, style)
-        kwargs: header=tuple(value, style), header=tuple(value, style)
-        args: value, value
-        kwargs: header=value, header=value
-        '''
+        """
+        :param args: tuple(value, style), tuple(value, style)
+        :param kwargs: header=tuple(value, style), header=tuple(value, style)
+        :param args: value, value
+        :param kwargs: header=value, header=value
+        """
 
         if args:
             kwargs = dict(zip(self.header, args))
@@ -304,6 +305,7 @@ class PyHeaderSheet(PyHeaderFile):
                 cell = (cell,)
             self.write_cell(self._row, self.header.index(header), *cell)
         self._row += 1
+
 
 class Xls(PyHeaderSheet):
     """
@@ -365,7 +367,8 @@ class Xls(PyHeaderSheet):
         else:
             header = self.header[y]
         if self.strip:
-            cell.value = cell.value.strip()
+            if is_str_or_unicode(cell.value):
+                cell.value = cell.value.strip()
         if self.style:
             return {header: (cell.value, style)}
         else:
@@ -385,12 +388,12 @@ class Xls(PyHeaderSheet):
     def close(self):
         # save and close without changing path
         self._file.save(self.name)
-        if not (isinstance(self.name, str) or isinstance(self.name, unicode)):
+        if not is_str_or_unicode(self.name):
             return self.name.getvalue()
 
     def save(self, path=None):
         # save the file
-        if isinstance(self.name, str) or isinstance(self.name, unicode):
+        if is_str_or_unicode(self.name):
             name = self.name
         else:
             name = 'default.xls'
@@ -403,9 +406,8 @@ class Xls(PyHeaderSheet):
 
     def _create(self):
         # create the file and sheet; write the header
-        # TODO @thiago_medk
         self._file = self.xlwt.Workbook(style_compression=2)
-        if isinstance(self.name, str) or isinstance(self.name, unicode):
+        if is_str_or_unicode(self.name):
             name = self.path.splitext(self.name)[0]
             basename = self.path.basename(name)
             if not self.sheet_name:
@@ -418,18 +420,16 @@ class Xls(PyHeaderSheet):
                                            cell_overwrite_ok=True)
         self.write(*self.header)
 
-
     def _open(self):
         # open the file and get sheets
         if not hasattr(self, '_file'):
-            if isinstance(self.name, str) or isinstance(self.name, unicode):
+            if is_str_or_unicode(self.name):
                 self._file = self.xlrd.open_workbook(filename=self.name,
                                                      formatting_info=True)
             else:
                 self._file = self.xlrd.open_workbook(file_contents=self.name.getvalue(),
                                                      formatting_info=True)
             self.sheet_names = self._file.sheet_names()
-
 
     def _open_sheet(self):
         # read the sheet, get value the header, get number columns and rows
@@ -438,7 +438,6 @@ class Xls(PyHeaderSheet):
             self.header = [cell.value for cell in self._sheet.row(0)]
             self.ncols = self._sheet.ncols
             self.nrows = self._sheet.nrows
-
 
     def _import(self):
         import xlrd
@@ -472,7 +471,6 @@ class Xlsx(PyHeaderSheet):
 
     """
 
-
     def __init__(self, name=None, header=list(), sheet_name=None, style=None,
                  strip=False):
         self.name = name
@@ -489,13 +487,13 @@ class Xlsx(PyHeaderSheet):
         else:
             header = self.header[y]
         if self.strip:
-            self._sheet.rows[x][y].value = self._sheet.rows[x][y].value.strip()
+            if is_str_or_unicode(self._sheet.rows[x][y].value):
+                self._sheet.rows[x][y].value = self._sheet.rows[x][y].value.strip()
         if self.style:
             return {header: (
                 self._sheet.rows[x][y].value, self._sheet.rows[x][y].style)}
         else:
             return {header: self._sheet.rows[x][y].value}
-
 
     def write_cell(self, x, y, value, style=None):
         # writing style and value in the cell of x+1 and y+1 position
@@ -506,12 +504,12 @@ class Xlsx(PyHeaderSheet):
     def close(self):
         # save and close without changing path
         self._file.save(self.name)
-        if not (isinstance(self.name, str) or isinstance(self.name, unicode)):
+        if not is_str_or_unicode(self.name):
             return self.name.getvalue()
 
     def save(self, path=None):
         # save the file
-        if isinstance(self.name, str) or isinstance(self.name, unicode):
+        if is_str_or_unicode(self.name):
             name = self.name
         else:
             name = 'default.xlsx'
@@ -526,7 +524,7 @@ class Xlsx(PyHeaderSheet):
         # open the file with the function xlwt and openpyxl; get sheets
         if not hasattr(self, '_file'):
             #  needed to get right col number
-            if isinstance(self.name, str) or isinstance(self.name, unicode):
+            if is_str_or_unicode(self.name):
                 self.file_xlrd = self.xlrd.open_workbook(filename=self.name,
                                                      formatting_info=False)
             else:
@@ -535,7 +533,6 @@ class Xlsx(PyHeaderSheet):
 
             self._file = self.openpyxl.load_workbook(filename=self.name)
             self.sheet_names = self._file.get_sheet_names()
-
 
     def _open_sheet(self):
         # read the sheet, get value the header, get number columns and rows
@@ -547,11 +544,10 @@ class Xlsx(PyHeaderSheet):
             for i in range(0, self.ncols):
                 self.header = self.header + [self._sheet.rows[0][i].value]
 
-
     def _create(self):
         # create the file and sheet; write the header
         self._file = self.openpyxl.Workbook()
-        if isinstance(self.name, str) or isinstance(self.name, unicode):
+        if is_str_or_unicode(self.name):
             name = self.path.splitext(self.name)[0]
             basename = self.path.basename(name)
             if not self.sheet_name:
@@ -576,12 +572,12 @@ class Xlsx(PyHeaderSheet):
 
 # TODO(dmvieira) not implemented
 class Ods(PyHeaderSheet):
-    '''
+    """
     class that read ods files.
     Need reimplementing with new module. Peharps theses links:
     http://www.marco83.com/work/173/read-an-ods-file-with-python-and-odfpy/
     http://opendocumentfellowship.com/projects/odfpy
-    '''
+    """
 
     def __init__(self, name=None, header=list(), sheet_name=None):
         self.name = name
@@ -615,9 +611,12 @@ class Ods(PyHeaderSheet):
         # self.ezodf = ezodf
         raise NotImplementedError
 
+
 def guess_type(filename,**kwargs):
     """ Utility function to call classes based on filename extension.
-    Just usefull if you are reading the file and don't know file extension. You can pass kwargs and these args are passed to class only if they are used in class.
+    Just usefull if you are reading the file and don't know file extension.
+    You can pass kwargs and these args are passed to class only if they are
+    used in class.
     """
     import os
 
@@ -636,6 +635,16 @@ def guess_type(filename,**kwargs):
         return case.get(low_extension)(filename, **new_kwargs)
     else:
         raise Exception('No extension found')
+
+
+def is_str_or_unicode(value):
+    """
+    Verifies if sting or unicode.
+    :param value: value to be verified
+    :return: True or None
+    """
+    if isinstance(value, str) or isinstance(value, unicode):
+        return True
 
 ################################################################################
 # run tests
