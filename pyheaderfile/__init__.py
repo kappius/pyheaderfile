@@ -716,8 +716,6 @@ class GSheet(PyHeaderSheet):
             header = self.header[y][0]
         else:
             header = self.header[y]
-        # need to add 1 to the index for the google spreadsheet reads from the index 1
-        # TODO(dmvieira, thiagopf) improve it
         x += 1
         y += 1
         if self.strip:
@@ -733,8 +731,6 @@ class GSheet(PyHeaderSheet):
         :param value: value to be written
         :return:
         """
-        # need to add 1 to the index for the google spreadsheet reads from the index 1
-        # TODO(dmvieira, thiagopf) improve it
         x += 1
         y += 1
         self._sheet.update_cell(x, y, value)
@@ -745,7 +741,9 @@ class GSheet(PyHeaderSheet):
         :param path:
         :return:
         """
-        raise NotImplementedError
+        if path:
+            raise NotImplementedError
+        return
 
     def _open(self):
         """
@@ -765,8 +763,8 @@ class GSheet(PyHeaderSheet):
             self._sheet = self._file.worksheet(self.sheet_name.title)
             self.ncols = self._sheet.col_count
             self.nrows = self._sheet.row_count
-            for i in range(0, self.ncols):
-                self.header = self.header + [self._sheet.cell(1, i+1).value]
+            for i in range(1, self.ncols+1):
+                self.header = self.header + [self._sheet.cell(1, i).value]
 
     def _create(self):
         """
