@@ -3,3 +3,4 @@ openpyxl==2.1.0
 unicodecsv==0.9.4
 xlrd==0.9.3
 xlwt==0.7.5
+gspread==0.2.3

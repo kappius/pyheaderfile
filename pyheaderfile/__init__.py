@@ -6,20 +6,31 @@ __all__ = ['Csv', 'Xls', 'Xlsx']
 VERSION = (0, 1, 9)
 __version__ = ".".join(map(str, VERSION))
 
+
 class PyHeaderFile(object):
-    # father class of all filetypes
+    """
+    Father class of all filetypes
+    """
 
     def __init__(self, *args, **kwargs):
+        """
+        :param args:
+        :param kwargs:
+        :return:
+        """
         self._import()
         if self.name:
             if self.header:
                 self._create()
             self._open()
 
-
     def __call__(self, instance, **kwargs):
-
-        # convert any File object to any File and save it
+        """
+        Convert any File object to any File and save it
+        :param instance:
+        :param kwargs:
+        :return:
+        """
 
         self.__init__(instance.name, instance.header, **kwargs)
 
@@ -34,25 +45,36 @@ class PyHeaderFile(object):
         self.save()
 
     def read(self):
-
-        # read each line of file. Should be an interator
+        """
+        Read each line of file. Should be an interator
+        :return:
+        """
 
         raise NotImplementedError
 
     def write(self, *args, **kwargs):
-        ''' write to file by args or kwargs. Should be a list
+        """
+        Write to file by args or kwargs. Should be a list
         with elements or a dict for writes with unordered
         lines
-        '''
+        :param args:
+        :param kwargs:
+        :return:
+        """
         raise NotImplementedError
 
     def __exit__(self):
+        """
+
+        :return:
+        """
         self.save()
 
     def save(self):
-
-        # save and close file
-
+        """
+        save and close file
+        :return:
+        """
         return NotImplemented
 
     # can use method close or save
@@ -77,21 +99,24 @@ class PyHeaderFile(object):
         self._header = header
 
     def _open(self):
-        ''' open file and get header of file. Some oder needed initialization
+        """
+        open file and get header of file. Some oder needed initialization
         things can be done here
-        '''
+        """
         raise NotImplementedError
 
     def _create(self):
-
-        # create new file with right extension
-
+        """
+        Create new file with right extension
+        :return:
+        """
         raise NotImplementedError
 
     def _import(self):
-
-        # import needed libs. This prevent conflicts
-
+        """
+        Import needed libs. This prevent conflicts
+        :return:
+        """
         raise NotImplementedError
 
 
@@ -120,6 +145,17 @@ class Csv(PyHeaderFile):
     def __init__(self, name=None, header=list(), encode='utf-8', header_line=0,
                  delimiters=[",", ";", "#"], strip=False,
                  quotechar='"'):
+        """
+
+        :param name: file name
+        :param header: list with the header ['text1','text2','text3']
+        :param encode: encode file
+        :param header_line: header line number
+        :param delimiters: delimiter file
+        :param strip: true to take spaces of values
+        :param quotechar:
+        :return:
+        """
         self.name = name
         self.header = header
         self.delimiters = list(delimiters)
@@ -130,7 +166,10 @@ class Csv(PyHeaderFile):
         super(Csv, self).__init__()
 
     def read(self):
-        # open file in mode write and read the line. Return the dict 'header = value'
+        """
+        Open file in mode write and read the line.
+        :return the dict 'header = value'
+        """
         if not hasattr(self, '_file'):
             self._open()
         elif self._file.mode == 'wb':
@@ -142,7 +181,13 @@ class Csv(PyHeaderFile):
             yield dict(zip(self.header, row))
 
     def write(self, *args, **kwargs):
-        # write the value in the file
+        """
+        Write the value in the file
+        :param args:
+        :param kwargs:
+        :return:
+        """
+
         if not hasattr(self, '_file'):
             self._file = open(self.name, 'a')
         elif self._file.mode == 'rb':
@@ -157,23 +202,33 @@ class Csv(PyHeaderFile):
         writer.writerow(kwargs)
 
     def save(self):
-        # close de file
+        """
+        Close de file
+        :return:
+        """
         if hasattr(self, '_file'):
             self._file.close()
 
     def _get_dialect(self):
-        # discover a dialect to csv file based on some delimiters
+        """
+        Discover a dialect to csv file based on some delimiters
+        :return:
+        """
         try:
             for i in range(0, self.header_line):
                 self._file.readline()
             self.dialect = self.csv.Sniffer().sniff(self._file.readline(),
                                                     delimiters=self.delimiters)
+        # TODO verify except
         except:
             self.dialect = self.delimiters[0]
         self._file.seek(0)
 
     def _open(self):
-        # open the file and get header
+        """
+        Open the file and get header
+        :return:
+        """
         self._file = open(self.name, 'rb')
         self._file.seek(0)
         self._get_dialect()
@@ -184,15 +239,21 @@ class Csv(PyHeaderFile):
         self.header = self.reader.next()
 
     def _create(self):
-        # create the file and write the header
+        """
+        Create the file and write the header
+        :return:
+        """
         basename = self.path.splitext(self.name)[0]
         self.name = "%s.csv" % basename
         with open(self.name, 'wb') as self._file:
             self._file.seek(0)
             self.write(*self.header)
 
-
     def _import(self):
+        """
+        Makes imports
+        :return:
+        """
         import unicodecsv as csv
         import os.path
 
@@ -201,8 +262,14 @@ class Csv(PyHeaderFile):
 
 
 class PyHeaderSheet(PyHeaderFile):
-    # class that use similar functions for sheets
+    """
+    Class that use similar functions for sheets
+    """
     def __init__(self):
+        """
+
+        :return:
+        """
         self._row = 0
         super(PyHeaderSheet, self).__init__()
         if self.header:
@@ -215,14 +282,24 @@ class PyHeaderSheet(PyHeaderFile):
     # define and get sheet name into a spreadsheet file
     @property
     def sheet_name(self):
+        """
+        :return: sheet name
+        """
         return self._sheet_name
 
     @sheet_name.setter
     def sheet_name(self, sheet_name):
+        """
+        :param sheet_name: sheet name
+        :return:
+        """
         self._sheet_name = sheet_name
 
     def _first_sheet(self):
-        # get first sheet
+        """
+        Get first sheet
+        :return:
+        """
         try:
             self.sheet_name = self.sheet_names[0]
         except IndexError:
@@ -230,16 +307,25 @@ class PyHeaderSheet(PyHeaderFile):
 
     @property
     def sheet_names(self):
-        # returns a list with the sheet file
+        """
+        Returns a list with the sheet file
+        :return:
+        """
         return self._sheet_names
 
     @sheet_names.setter
     def sheet_names(self, sheet_names):
-        # returns a list with the sheet file
+        """
+        :param sheet_names: list with the sheet names
+        :return:
+        """
         self._sheet_names = sheet_names
 
     def read(self):
-        # read the file line
+        """
+        Read the file line
+        :return: line in the format dict(header = value)
+        """
         for x in xrange(1, self.nrows):
             row = dict()
             for y in xrange(0, self.ncols):
@@ -248,12 +334,14 @@ class PyHeaderSheet(PyHeaderFile):
 
     # pass x, y, value and style for function write_cell
     def write(self, *args, **kwargs):
-        ''' args: tuple(value, style), tuple(value, style)
-        kwargs: header=tuple(value, style), header=tuple(value, style)
-        args: value, value
-        kwargs: header=value, header=value
-        '''
+        """
 
+        :param args: tuple(value, style), tuple(value, style)
+        :param kwargs: header=tuple(value, style), header=tuple(value, style)
+        :param args: value, value
+        :param kwargs: header=value, header=value
+        :return:
+        """
         if args:
             kwargs = dict(zip(self.header, args))
         for header in kwargs:
@@ -283,10 +371,19 @@ class Xls(PyHeaderSheet):
         >>> convert_csv = Csv()
         >>> convert_csv(test)
         >>> convert_csv.save()
-
     """
+
     def __init__(self, name=None, header=list(), sheet_name=None, style=None,
                  strip=False):
+        """
+
+        :param name: file name
+        :param header: list with the header ['text1','text2','text3']
+        :param sheet_name: sheet name
+        :param style: header style configuration; easyxf(style)
+        :param strip: true to take spaces of values
+        :return:
+        """
         self.name = name
         self.header = header
         self.sheet_name = sheet_name
@@ -297,7 +394,10 @@ class Xls(PyHeaderSheet):
 
     def read_cell(self, x, y):
         """
-            reads the cell at position x and y; puts the default styles in xlwt
+        Reads the cell at position x and y; puts the default styles in xlwt
+        :param x: line index
+        :param y: coll index
+        :return: {header: value} or case have style {header: value, style}
         """
         cell = self._sheet.row(x)[y]
         if self._file.xf_list[
@@ -332,7 +432,12 @@ class Xls(PyHeaderSheet):
 
     def write_cell(self, x, y, value, style=None):
         """
-            writing style and value in the cell of x and y position
+        Writing style and value in the cell of x and y position
+        :param x: line index
+        :param y: coll index
+        :param value: value to be written
+        :param style: style configuration; easyxf(style)
+        :return:
         """
         if isinstance(style, str):
             style = self.xlwt.easyxf(style)
@@ -342,14 +447,21 @@ class Xls(PyHeaderSheet):
             self._sheet.write(x, y, label=value)
 
     def save(self, path=None):
-        # save the file
+        """
+        Save the file
+        :param path: path to save the file
+        :return:
+        """
         if path:
             self._file.save(path + self.name)
         else:
             self._file.save(self.name)
 
     def _create(self):
-        # create the file and sheet; write the header
+        """
+        Create the file and sheet; write the header
+        :return:
+        """
         # TODO @thiago_medk
         self._file = self.xlwt.Workbook(style_compression=2)
         basename = self.path.splitext(self.name)[0]
@@ -360,25 +472,32 @@ class Xls(PyHeaderSheet):
                                            cell_overwrite_ok=True)
         self.write(*self.header)
 
-
     def _open(self):
-        # open the file and get sheets
+        """
+        Open the file and get sheets
+        :return:
+        """
         if not hasattr(self, '_file'):
             self._file = self.xlrd.open_workbook(filename=self.name,
                                                  formatting_info=True)
             self.sheet_names = self._file.sheet_names()
 
-
     def _open_sheet(self):
-        # read the sheet, get value the header, get number columns and rows
+        """
+        Read the sheet, get value the header, get number columns and rows
+        :return:
+        """
         if self.sheet_name and not self.header:
             self._sheet = self._file.sheet_by_name(self.sheet_name)
             self.header = [cell.value for cell in self._sheet.row(0)]
             self.ncols = self._sheet.ncols
             self.nrows = self._sheet.nrows
 
-
     def _import(self):
+        """
+        Makes imports
+        :return:
+        """
         import xlrd
         import xlwt
         import os.path
@@ -407,12 +526,19 @@ class Xlsx(PyHeaderSheet):
         >>> convert_csv = Csv()
         >>> convert_csv(test)
         >>> convert_csv.save()
-
     """
-
 
     def __init__(self, name=None, header=list(), sheet_name=None, style=None,
                  strip=False):
+        """
+
+        :param name: file name
+        :param header: list with the header ['text1','text2','text3']
+        :param sheet_name: sheet name
+        :param style: header style
+        :param strip: true to take spaces of values
+        :return:
+        """
         self.name = name
         self.header = header
         self.style = style
@@ -421,7 +547,13 @@ class Xlsx(PyHeaderSheet):
         super(Xlsx, self).__init__()
 
     def read_cell(self, x, y):
-        # reads the cell at position x and y; return value and style
+        """
+        Reads the cell at position x and y; return value and style
+        :param x: line index
+        :param y: coll index
+        :return: {header: value} or case have style {header: value, style}
+        """
+
         if isinstance(self.header[y], tuple):
             header = self.header[y][0]
         else:
@@ -434,31 +566,46 @@ class Xlsx(PyHeaderSheet):
         else:
             return {header: self._sheet.rows[x][y].value}
 
-
     def write_cell(self, x, y, value, style=None):
-        # writing style and value in the cell of x+1 and y+1 position
+        """
+        Writing style and value in the cell of x+1 and y+1 position
+        :param x: line index
+        :param y: coll index
+        :param value: value to be written
+        :param style: style configuration
+        :return:
+        """
         self._sheet.cell(row=x + 1, column=y + 1).value = value
         if style:
             self._sheet.cell(row=x + 1, column=y + 1).style = style
 
     def save(self, path=None):
-        # save the file
+        """
+        Save the file
+        :param path: path to save the file
+        :return:
+        """
         if path:
             self._file.save(filename=path + self.name)
         else:
             self._file.save(filename=self.name)
 
     def _open(self):
-        # open the file with the function xlwt and openpyxl; get sheets
+        """
+        Open the file with the function xlwt and openpyxl; get sheets
+        :return:
+        """
         if not hasattr(self, '_file'):
             self.file_xlrd = self.xlrd.open_workbook(filename=self.name,
                                                      formatting_info=False)
             self._file = self.openpyxl.load_workbook(filename=self.name)
             self.sheet_names = self._file.get_sheet_names()
 
-
     def _open_sheet(self):
-        # read the sheet, get value the header, get number columns and rows
+        """
+        Read the sheet, get value the header, get number columns and rows
+        :return:
+        """
         if self.sheet_name and not self.header:
             self._sheet = self._file.get_sheet_by_name(self.sheet_name)
             self.sheet_xlrd = self.file_xlrd.sheet_by_name(self.sheet_name)
@@ -467,9 +614,11 @@ class Xlsx(PyHeaderSheet):
             for i in range(0, self.ncols):
                 self.header = self.header + [self._sheet.rows[0][i].value]
 
-
     def _create(self):
-        # create the file and sheet; write the header
+        """
+        Create the file and sheet; write the header
+        :return:
+        """
         self._file = self.openpyxl.Workbook()
         basename = self.path.splitext(self.name)[0]
         if not self.sheet_name:
@@ -480,6 +629,9 @@ class Xlsx(PyHeaderSheet):
         self.write(*self.header)
 
     def _import(self):
+        """
+        Makes imports
+        """
         import openpyxl
         import xlrd
         import os.path
@@ -491,12 +643,12 @@ class Xlsx(PyHeaderSheet):
 
 # TODO(dmvieira) not implemented
 class Ods(PyHeaderSheet):
-    '''
+    """
     class that read ods files.
     Need reimplementing with new module. Peharps theses links:
     http://www.marco83.com/work/173/read-an-ods-file-with-python-and-odfpy/
     http://opendocumentfellowship.com/projects/odfpy
-    '''
+    """
 
     def __init__(self, name=None, header=list(), sheet_name=None):
         self.name = name
@@ -526,6 +678,116 @@ class Ods(PyHeaderSheet):
         # import ezodf
         # self.ezodf = ezodf
         raise NotImplementedError
+
+
+class GSheet(PyHeaderSheet):
+    """
+    Class that read google spreadsheet files
+    """
+
+    def __init__(self, email, password, name=None, header=list(),
+                 sheet_name=None, strip=False):
+        """
+        :param email: email
+        :param password: password
+        :param name: file name
+        :param header: list with the header ['text1','text2','text3']
+        :param sheet_name: sheet name
+        :param strip: true to take spaces of values
+        :return:
+        """
+        self.name = name
+        self.email = email
+        self.password = password
+        self.header = header
+        self.strip = strip
+        self.sheet_name = sheet_name
+        self._login()
+        super(GSheet, self).__init__()
+
+    def read_cell(self, x, y):
+        """
+        Reads the cell at position x+1 and y+1; return value
+        :param x: line index
+        :param y: coll index
+        :return: {header: value}
+        """
+        if isinstance(self.header[y], tuple):
+            header = self.header[y][0]
+        else:
+            header = self.header[y]
+        x += 1
+        y += 1
+        if self.strip:
+            self._sheet.cell(x, y).value = self._sheet.cell(x, y).value.strip()
+        else:
+            return {header: self._sheet.cell(x, y).value}
+
+    def write_cell(self, x, y, value):
+        """
+        Writing value in the cell of x+1 and y+1 position
+        :param x: line index
+        :param y: coll index
+        :param value: value to be written
+        :return:
+        """
+        x += 1
+        y += 1
+        self._sheet.update_cell(x, y, value)
+
+    def save(self, path=None):
+        """
+
+        :param path:
+        :return:
+        """
+        if path:
+            raise NotImplementedError
+        return
+
+    def _open(self):
+        """
+        Open the file; get sheets
+        :return:
+        """
+        if not hasattr(self, '_file'):
+            self._file = self.gc.open(self.name)
+            self.sheet_names = self._file.worksheets()
+
+    def _open_sheet(self):
+        """
+        Read the sheet, get value the header, get number columns and rows
+        :return:
+        """
+        if self.sheet_name and not self.header:
+            self._sheet = self._file.worksheet(self.sheet_name.title)
+            self.ncols = self._sheet.col_count
+            self.nrows = self._sheet.row_count
+            for i in range(1, self.ncols+1):
+                self.header = self.header + [self._sheet.cell(1, i).value]
+
+    def _create(self):
+        """
+
+        :return:
+        """
+        raise NotImplementedError
+
+    def _import(self):
+        """
+        Makes imports
+        :return:
+        """
+        import os.path
+        self.path = os.path
+
+    def _login(self):
+        """
+        Login with your Google account
+        :return:
+        """
+        import gspread
+        self.gc = gspread.login(self.email, self.password)
 
 ################################################################################
 # run tests
