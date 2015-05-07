@@ -615,6 +615,7 @@ class Ods(PyHeaderSheet):
 class GSheet(PyHeaderSheet):
     """
     Class that read google spreadsheet files
+
     """
 
     def __init__(self, email, password, name=None, header=list(),
@@ -634,8 +635,8 @@ class GSheet(PyHeaderSheet):
         self.header = header
         self.strip = strip
         self.sheet_name = sheet_name
-        self._login()
         super(GSheet, self).__init__()
+
 
     def read_cell(self, x, y):
         """
@@ -711,15 +712,17 @@ class GSheet(PyHeaderSheet):
         :return:
         """
         import os.path
+        import gspread
         self.path = os.path
+        self.gspread = gspread
+        self._login()
 
     def _login(self):
         """
         Login with your Google account
         :return:
         """
-        import gspread
-        self.gc = gspread.login(self.email, self.password)
+        self.gc = self.gspread.login(self.email, self.password)
 
 
 def guess_type(filename,**kwargs):
