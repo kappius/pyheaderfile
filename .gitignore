@@ -6,3 +6,5 @@
 *.xls
 *.xlsx
 *.ods
+pyheaderfile.egg-info/
+dist/
