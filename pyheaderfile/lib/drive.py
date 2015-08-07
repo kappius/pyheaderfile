@@ -9,11 +9,10 @@ class GSheet(PyHeaderSheet):
 
     """
 
-    def __init__(self, email, password, name=None, header=list(),
+    def __init__(self, json_credentials, name=None, header=list(),
                  sheet_name=None, strip=False):
         """
-        :param email: email
-        :param password: password
+        :param json_credentials: google drive credentials
         :param name: file name
         :param header: list with the header ['text1','text2','text3']
         :param sheet_name: sheet name
@@ -26,6 +25,8 @@ class GSheet(PyHeaderSheet):
         self.header = header
         self.strip = strip
         self.sheet_name = sheet_name
+        self.json_credentials = json_credentials
+        self.scope = ['https://spreadsheets.google.com/feeds']
         super(GSheet, self).__init__()
 
 
@@ -74,6 +75,7 @@ class GSheet(PyHeaderSheet):
         Open the file; get sheets
         :return:
         """
+        self._login()
         if not hasattr(self, '_file'):
             self._file = self.gc.open(self.name)
             self.sheet_names = self._file.worksheets()
@@ -104,14 +106,20 @@ class GSheet(PyHeaderSheet):
         """
         import os.path
         import gspread
+        import json
+        from oauth2client.client import SignedJwtAssertionCredentials
         self.path = os.path
         self.gspread = gspread
-        self._login()
+        self.json = json
+        self.SignedJwtAssertionCredentials = SignedJwtAssertionCredentials
 
     def _login(self):
         """
         Login with your Google account
         :return:
         """
-        # TODO(dmvieira) login changed to oauth2
-        self.gc = self.gspread.login(self.email, self.password)
+        json_key = self.json.load(open(self.json_credentials))
+        credentials = self.SignedJwtAssertionCredentials(json_key['client_email'],
+                                                         json_key['private_key'],
+                                                         self.scope)
+        self.gc = gspread.authorize(credentials)
