@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from basefile import PyHeaderSheet
+from pyheaderfile.lib.basefile import PyHeaderSheet
 
 class GSheet(PyHeaderSheet):
     """
