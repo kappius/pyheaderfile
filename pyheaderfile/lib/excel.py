@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from basefile import PyHeaderSheet
-from utils import is_str_or_unicode
+from pyheaderfile.lib.basefile import PyHeaderSheet
+from pyheaderfile.lib.utils import is_str_or_unicode
 
 class Xls(PyHeaderSheet):
     """
