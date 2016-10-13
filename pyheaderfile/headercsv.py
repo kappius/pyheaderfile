@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from pyheaderfile.lib.basefile import PyHeaderFile
+from pyheaderfile.basefile import PyHeaderFile
 
 class Csv(PyHeaderFile):
     """
