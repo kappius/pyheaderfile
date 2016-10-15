@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from pyheaderfile.basefile import PyHeaderSheet
-from pyheaderfile.utils import is_str_or_unicode
+from .basefile import PyHeaderSheet
+from .utils import is_str_or_unicode
 
 class Xls(PyHeaderSheet):
     """
         class that read xls files
 
-        >>> type(Xls())
-        <class 'pyheaderfile.pyheaderfile.lib.excel.Xls'>
         >>> test = Xls(name="test", header=["col1","col2","col3"])
         >>> test.write(*["test1","test2","test3"])
         >>> test.save('../')
@@ -151,8 +149,6 @@ class Xlsx(PyHeaderSheet):
     """
         class that read xlsx files
 
-        >>> type(Xlsx())
-        <class 'pyheaderfile.pyheaderfile.lib.excel.Xlsx'>
         >>> test = Xlsx(name="test", header=["col1","col2","col3"])
         >>> test.write(*["test1","test2","test3"])
         >>> test.save('../')

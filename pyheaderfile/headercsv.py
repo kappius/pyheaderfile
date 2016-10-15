@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from pyheaderfile.basefile import PyHeaderFile
+from .basefile import PyHeaderFile
 
 class Csv(PyHeaderFile):
     """
         class that read csv files with ; and , and #
 
-        >>> type(Csv())
-        <class 'pyheaderfile.pyheaderfile.lib.headercsv.Csv'>
         >>> test = Csv(name="test", header=["col1","col2","col3"])
         >>> test.write(*["test1","test2","test3"])
         >>> test.save('../')

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from pyheaderfile.basefile import PyHeaderSheet
+from .basefile import PyHeaderSheet
 
 # TODO(dmvieira) not implemented
 class Ods(PyHeaderSheet):
