@@ -12,13 +12,14 @@ class Xls(PyHeaderSheet):
         >>> test.write(*["test1","test2","test3"])
         >>> test.save('../')
         >>> test = Xls(name='../test.xls')
-        >>> [i for i in test.read()]
-        [{u'col2': u'test2', u'col3': u'test3', u'col1': u'test1'}]
+        >>> content = test.read()
+        >>> sorted(next(content).items())
+        [('col1', 'test1'), ('col2', 'test2'), ('col3', 'test3')]
         >>> test.name = 'test2'
         >>> convert_xlsx = Xlsx()
         >>> convert_xlsx(test)
         >>> convert_xlsx.save()
-        >>> from headercsv import Csv
+        >>> from .headercsv import Csv
         >>> convert_csv = Csv()
         >>> convert_csv(test)
         >>> convert_csv.save()
@@ -153,13 +154,14 @@ class Xlsx(PyHeaderSheet):
         >>> test.write(*["test1","test2","test3"])
         >>> test.save('../')
         >>> test = Xlsx(name='../test.xlsx')
-        >>> [i for i in test.read()]
-        [{u'col2': u'test2', u'col3': u'test3', u'col1': u'test1'}]
+        >>> content = test.read()
+        >>> sorted(next(content).items())
+        [('col1', 'test1'), ('col2', 'test2'), ('col3', 'test3')] 
         >>> test.name = 'test2'
         >>> convert_xls = Xls()
         >>> convert_xls(test)
         >>> convert_xls.save()
-        >>> from headercsv import Csv
+        >>> from .headercsv import Csv
         >>> convert_csv = Csv()
         >>> convert_csv(test)
         >>> convert_csv.save()
@@ -182,13 +184,13 @@ class Xlsx(PyHeaderSheet):
         else:
             header = self.header[y]
         if self.strip:
-            if is_str_or_unicode(self._sheet.rows[x][y].value):
-                self._sheet.rows[x][y].value = self._sheet.rows[x][y].value.strip()
+            if is_str_or_unicode(list(self._sheet.rows)[x][y].value):
+                self._sheet.rows[x][y].value = list(self._sheet.rows)[x][y].value.strip()
         if self.style:
             return {header: (
-                self._sheet.rows[x][y].value, self._sheet.rows[x][y].style)}
+                self._sheet.rows[x][y].value, list(self._sheet.rows)[x][y].style)}
         else:
-            return {header: self._sheet.rows[x][y].value}
+            return {header: list(self._sheet.rows)[x][y].value}
 
     def write_cell(self, x, y, value, style=None):
         # writing style and value in the cell of x+1 and y+1 position
@@ -237,7 +239,7 @@ class Xlsx(PyHeaderSheet):
             self.ncols = self.sheet_xlrd.ncols
             self.nrows = self.sheet_xlrd.nrows
             for i in range(0, self.ncols):
-                self.header = self.header + [self._sheet.rows[0][i].value]
+                self.header = self.header + [list(self._sheet.rows)[0][i].value]
 
     def _create(self):
         # create the file and sheet; write the header

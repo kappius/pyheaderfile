@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import sys
 
 from .basefile import PyHeaderFile
 
@@ -11,10 +12,11 @@ class Csv(PyHeaderFile):
         >>> test.write(*["test1","test2","test3"])
         >>> test.save('../')
         >>> test = Csv(name='../test.csv')
-        >>> [i for i in test.read()]
-        [{u'col2': u'test2', u'col3': u'test3', u'col1': u'test1'}]
+        >>> content = test.read()
+        >>> sorted(next(content).items())
+        [('col1', 'test1'), ('col2', 'test2'), ('col3', 'test3')]
         >>> test.name = 'test2'
-        >>> from excel import Xls, Xlsx
+        >>> from .excel import Xls, Xlsx
         >>> convert_xlsx = Xlsx()
         >>> convert_xlsx(test)
         >>> convert_xlsx.save()
@@ -41,7 +43,7 @@ class Csv(PyHeaderFile):
         if isinstance(self.name, str) or isinstance(self.name, unicode):
             if not hasattr(self, '_file'):
                 self._open()
-            elif self._file.mode == 'wb':
+            elif self._file.mode == 'w':
                 self._file.close()
                 self._open()
         else:
@@ -56,7 +58,7 @@ class Csv(PyHeaderFile):
         if isinstance(self.name, str) or isinstance(self.name, unicode):
             if not hasattr(self, '_file'):
                 self._file = open(self.name, 'a')
-            elif self._file.mode == 'rb':
+            elif self._file.mode == 'r':
                 self._file.close()
                 self._file = open(self.name, 'a')
         else:
@@ -106,23 +108,27 @@ class Csv(PyHeaderFile):
     def _open(self):
         # open the file and get header
         if isinstance(self.name, str) or isinstance(self.name, unicode):
-            self._file = open(self.name, 'rb')
+            self._file = open(self.name, 'r')
         else:
             self._file = self.name
         self._file.seek(0)
         self._get_dialect()
-        self.reader = self.csv.reader(self._file, self.dialect,
-                                      encoding=self.encode, doublequote=True)
+        if (sys.version_info > (3, 0)):
+            self.reader = self.csv.reader(self._file, self.dialect,
+                                          doublequote=True)
+        else:
+            self.reader = self.csv.reader(self._file, self.dialect,
+                                          encoding=self.encode, doublequote=True)
         for i in range(0, self.header_line):
-            self.reader.next()
-        self.header = self.reader.next()
+            next(self.reader)
+        self.header = next(self.reader)
 
     def _create(self):
         # create the file and write the header
         if isinstance(self.name, str) or isinstance(self.name, unicode):
             name = self.path.splitext(self.name)[0]
             self.name = "%s.csv" % name
-            self._file = open(self.name, 'wb')
+            self._file = open(self.name, 'w')
         else:
             self._file = self.name
 
@@ -134,7 +140,11 @@ class Csv(PyHeaderFile):
             self.write(*self.header)
 
     def _import(self):
-        import unicodecsv as csv
+        if (sys.version_info > (3, 0)):
+            import csv
+        else:
+            import unicodecsv as csv
+ 
         import os
 
         self.rename = os.rename

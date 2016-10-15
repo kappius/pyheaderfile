@@ -137,9 +137,9 @@ class PyHeaderSheet(PyHeaderFile):
 
     def read(self):
         # read the file line
-        for x in xrange(1, self.nrows):
+        for x in range(1, self.nrows):
             row = dict()
-            for y in xrange(0, self.ncols):
+            for y in range(0, self.ncols):
                 row.update(self.read_cell(x, y))
             yield row
 
