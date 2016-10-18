@@ -1,10 +1,13 @@
-from test_basefile import TestBaseFile
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from .test_basefile import TestBaseFile
 
 
 class TestCsv(TestBaseFile):
 
     def test_should_write(self):
-        expected = 'col1,col2,col3\r\ntest1,test2,test3\r\n'
+        expected = 'col1,col2,col3\ntest1,test2,test3\n'
         test = self.klass(name=self.name, header=["col1", "col2", "col3"])
         test.write(*["test1", "test2", "test3"])
         test.close()
@@ -12,7 +15,7 @@ class TestCsv(TestBaseFile):
             self.assertEqual(expected, csv_file.read())
 
     def test_should_read(self):
-        content = 'col1,col2,col3\r\ntest1,test2,test3\r\n'
+        content = 'col1,col2,col3\ntest1,test2,test3\n'
         with open(self.name, 'w') as csv_file:
             csv_file.write(content)
 

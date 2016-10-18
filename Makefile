@@ -2,7 +2,7 @@
 .PHONY: setup test clean build
 
 setup:
-	@pip install -r requirements_local.txt
+	@pip install -r test_requirements.txt
 	@pip install -r requirements.txt
 
 test:

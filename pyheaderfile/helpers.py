@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
+import inspect
 
 from .excel import Xls, Xlsx
 from .headercsv import Csv
@@ -11,7 +13,6 @@ def guess_type(filename, **kwargs):
     You can pass kwargs and these args are passed to class only if they are
     used in class.
     """
-    import os
 
     extension = os.path.splitext(filename)[1]
     case = {'.xls': Xls,
@@ -21,7 +22,7 @@ def guess_type(filename, **kwargs):
         low_extension = extension.lower()
         new_kwargs = dict()
         class_name = case.get(low_extension)
-        class_kwargs = class_name.__init__.func_code.co_names
+        class_kwargs = inspect.getargspec(class_name).args[1:]
         for kwarg in kwargs:
             if kwarg in class_kwargs:
                 new_kwargs[kwarg] = kwargs[kwarg]

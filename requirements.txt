@@ -1,5 +1,5 @@
 jdcal==1.0.1
 openpyxl==2.1.4
-unicodecsv==0.9.4
-xlrd==0.9.3
-xlwt==0.7.5
+unicodecsv==0.14.1
+xlrd==1.0.0
+xlwt==1.1.2
