@@ -22,7 +22,7 @@ def guess_type(filename, **kwargs):
         low_extension = extension.lower()
         new_kwargs = dict()
         class_name = case.get(low_extension)
-        class_kwargs = inspect.getargspec(class_name).args[1:]
+        class_kwargs = inspect.getargspec(class_name.__init__).args[1:]
         for kwarg in kwargs:
             if kwarg in class_kwargs:
                 new_kwargs[kwarg] = kwargs[kwarg]
