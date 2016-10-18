@@ -4,27 +4,9 @@
 from .basefile import PyHeaderSheet
 from .utils import is_str_or_unicode
 
+
 class Xls(PyHeaderSheet):
-    """
-        class that read xls files
 
-        >>> test = Xls(name="test", header=["col1","col2","col3"])
-        >>> test.write(*["test1","test2","test3"])
-        >>> test.save('../')
-        >>> test = Xls(name='../test.xls')
-        >>> content = test.read()
-        >>> sorted(next(content).items())
-        [('col1', 'test1'), ('col2', 'test2'), ('col3', 'test3')]
-        >>> test.name = 'test2'
-        >>> convert_xlsx = Xlsx()
-        >>> convert_xlsx(test)
-        >>> convert_xlsx.save()
-        >>> from .headercsv import Csv
-        >>> convert_csv = Csv()
-        >>> convert_csv(test)
-        >>> convert_csv.save()
-
-    """
     def __init__(self, name=None, header=list(), sheet_name=None, style=None,
                  strip=False):
         self.name = name
@@ -84,7 +66,8 @@ class Xls(PyHeaderSheet):
 
     def close(self):
         # save and close without changing path
-        self._file.save(self.name)
+        if hasattr(self._file, 'save'):
+            self._file.save(self.name)
         if not is_str_or_unicode(self.name):
             return self.name.getvalue()
 
@@ -97,7 +80,10 @@ class Xls(PyHeaderSheet):
 
         if path:
             basename = self.path.basename(name)
-            self._file.save(self.path.join(path, basename))
+            if hasattr(self._file, 'save'):
+                self._file.save(self.path.join(path, basename))
+            else:
+                raise Exception('I cant save file using read mode')
         else:
             return self.close()
 
@@ -147,27 +133,6 @@ class Xls(PyHeaderSheet):
 
 
 class Xlsx(PyHeaderSheet):
-    """
-        class that read xlsx files
-
-        >>> test = Xlsx(name="test", header=["col1","col2","col3"])
-        >>> test.write(*["test1","test2","test3"])
-        >>> test.save('../')
-        >>> test = Xlsx(name='../test.xlsx')
-        >>> content = test.read()
-        >>> sorted(next(content).items())
-        [('col1', 'test1'), ('col2', 'test2'), ('col3', 'test3')] 
-        >>> test.name = 'test2'
-        >>> convert_xls = Xls()
-        >>> convert_xls(test)
-        >>> convert_xls.save()
-        >>> from .headercsv import Csv
-        >>> convert_csv = Csv()
-        >>> convert_csv(test)
-        >>> convert_csv.save()
-
-    """
-
     def __init__(self, name=None, header=list(), sheet_name=None, style=None,
                  strip=False):
         self.name = name

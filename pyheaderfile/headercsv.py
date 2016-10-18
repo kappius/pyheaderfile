@@ -4,27 +4,8 @@ import sys
 
 from .basefile import PyHeaderFile
 
+
 class Csv(PyHeaderFile):
-    """
-        class that read csv files with ; and , and #
-
-        >>> test = Csv(name="test", header=["col1","col2","col3"])
-        >>> test.write(*["test1","test2","test3"])
-        >>> test.save('../')
-        >>> test = Csv(name='../test.csv')
-        >>> content = test.read()
-        >>> sorted(next(content).items())
-        [('col1', 'test1'), ('col2', 'test2'), ('col3', 'test3')]
-        >>> test.name = 'test2'
-        >>> from .excel import Xls, Xlsx
-        >>> convert_xlsx = Xlsx()
-        >>> convert_xlsx(test)
-        >>> convert_xlsx.save()
-        >>> convert_xls = Xls()
-        >>> convert_xls(test)
-        >>> convert_xls.save()
-
-    """
 
     def __init__(self, name=None, header=list(), encode='utf-8', header_line=0,
                  delimiters=[",", ";", "#"], strip=False,
@@ -144,7 +125,7 @@ class Csv(PyHeaderFile):
             import csv
         else:
             import unicodecsv as csv
- 
+
         import os
 
         self.rename = os.rename

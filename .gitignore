@@ -8,3 +8,6 @@
 *.ods
 pyheaderfile.egg-info/
 dist/
+__pycache__
+*.coverage
+*coverage.xml
