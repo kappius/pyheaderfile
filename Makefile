@@ -6,7 +6,7 @@ setup:
 	@pip install -r requirements.txt
 
 test:
-	@coverage run --branch `which nosetests` --with-yanc --logging-clear-handlers -s tests/*
+	@coverage run --branch `which nosetests` --with-yanc --logging-clear-handlers -s
 	@coverage report -m
 
 clean:
